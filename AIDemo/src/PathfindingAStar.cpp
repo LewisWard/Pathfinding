@@ -4,146 +4,118 @@
 
 AStar::AStar()
 {
-
+	Directions.reserve(4);
+	Directions = { { 0, 1 },{ 1, 0 },{ 0, -1 },{ -1, 0 } };
 }
 
-AStar::~AStar()
+void AStar::RemoveCollision(vec2 Coordinates)
 {
-
-}
-
-std::vector<int> AStar::compute()
-{
-	// size of the world (grids)
-	const int width = 10;
-	const int height = 10;
-
-	int startingGridIndex = 0;
-	int currentGridIndex = 0;
-
-	// reset vector
-	m_gridIndex.clear();
-
-	startingGridIndex = getIndex(m_startPosition);
-	currentGridIndex = startingGridIndex;
-
-	// create a path to end point
-	// compute the grid index for grids around clicked grod
-	//	0	1	2		| 0 == X - (width - 1) | 1 == X - width | 2 == (X - width) + 1
-	//	3	X	4		| 3 == X - 1           | current grid   | 4 == X + 1
-	//	5	6	7		| 5 == X + (width - 1) | 6 == X + width | 7 == (X + width) + 1
-	float shortestDistance = FLT_MAX;
-	float lowestCost = FLT_MAX;
-	int shortestIndex = currentGridIndex;
-	int T0, T1, T2, M0, M2, B0, B1, B2;
-	int gridCount = 0;
-	
-
-	vec2 atFinalGrid;
-
-	// compute path as long as there is still some distance to travel and it capped to vector size
-	while (shortestDistance >= 0.0f && gridCount < 100.0f && m_finishGridIndex != currentGridIndex)
+	std::vector<vec2>::iterator it = std::find(Walls.begin(), Walls.end(), Coordinates);
+	if (it != Walls.end())
 	{
-		m_targetInFinish = false;
-		gridCount++;
+		Walls.erase(it);
+	}
+}
 
-		// 4-way movement
-		int gridsNextTo[] = {
-			T1 = currentGridIndex - width,
-			M0 = currentGridIndex - 1,
-			M2 = currentGridIndex + 1,
-			B1 = currentGridIndex + width,
-		};
-		float movementWaySize = 4;
+AStarNode* AStar::FindNodeOnList(std::vector<AStarNode*>& Nodes, vec2 Coordinates)
+{
+	for (AStarNode* Node : Nodes)
+	{
+		if (Node->Coordinate == Coordinates)
+			return Node;
+	}
 
-		for (int i = 0; i < movementWaySize; ++i)
+	return nullptr;
+}
+
+void AStar::ReleaseNodes(std::vector<AStarNode*>& Nodes)
+{
+	for (std::vector<AStarNode*>::iterator it = Nodes.begin(); it != Nodes.end();)
+	{
+		delete *it;
+		it = Nodes.erase(it);
+	}
+}
+
+bool AStar::DetectCollision(vec2 Coordinates)
+{
+	if (Coordinates.x < 0 || Coordinates.x >= WorldSize.x || Coordinates.y < 0 || Coordinates.y >= WorldSize.y
+		|| std::find(Walls.begin(), Walls.end(), Coordinates) != Walls.end())
+		return true;
+
+	return false;
+}
+
+std::vector<vec2> AStar::FindPath(vec2 Start, vec2 Target)
+{
+	Start.x = (int)Start.x;
+	Start.y = (int)Start.y;
+	Target.x = (int)Target.x;
+	Target.y = (int)Target.y;
+
+
+	AStarNode* Current = nullptr;
+	std::vector<AStarNode*> CloseSet, OpenSet;
+	OpenSet.push_back(new AStarNode(Start));
+
+	while (!OpenSet.empty())
+	{
+		Current = *OpenSet.begin();
+
+		// Find smallest F score
+		for (AStarNode* Node : OpenSet)
 		{
-			if (gridsNextTo[i] < 0 || gridsNextTo[i] > 99)
-			{
-				gridsNextTo[i] = currentGridIndex;
-			}
+			if (Node->GetScore() <= Current->GetScore())
+				Current = Node;
 		}
 
-
-		// cycle all grids to find the shortest distance
-		for (int i = 0; i < movementWaySize; ++i)
+		// Found the target?
+		if (Current->Coordinate == Target)
 		{
-			// make sure the grid is walkable
-			if (m_grids[gridsNextTo[i]].walkable == true)
-			{
-				// compute distance from final grid (centre of the grid)
-				vec2 distance;
-				distance.x = m_endPosition.x - (m_grids[gridsNextTo[i]].gridBounds.m_min.x);
-				distance.y = m_endPosition.y - (m_grids[gridsNextTo[i]].gridBounds.m_min.y);
-
-				// the distance between the current and end grids
-				float vectorDistance = length(distance);
-				float movementCost = m_grids[gridsNextTo[i]].cost;
-
-				// if its the shortset distance to the end grid, store it
-				if (vectorDistance < shortestDistance && movementCost <= lowestCost && m_grids[gridsNextTo[i]].visited == false)
-				{
-					shortestDistance = vectorDistance;
-					shortestIndex = gridsNextTo[i];
-					currentGridIndex = shortestIndex;
-					lowestCost = movementCost;
-				}
-			}
+			break;
 		}
-		m_gridIndex.push_back(shortestIndex);
 
-		// stop pushing back the same index to fill vector to 100 in size.
-		// make sure we have at least two elements
-		if (m_gridIndex.size() > 1)
+		CloseSet.push_back(Current);
+		OpenSet.erase(std::find(OpenSet.begin(), OpenSet.end(), Current));
+
+		// For each of the nodes around this node, if valid/not on the closed list compute it's total cost
+		for (int i = 0; i < DirectionsCount; i++)
 		{
-			// if the last two were the same, stop the search
-			if (m_gridIndex[m_gridIndex.size() - 1] == m_gridIndex[m_gridIndex.size() - 2])
+			vec2 NewCoord(Current->Coordinate + Directions[i]);
+
+			if (DetectCollision(NewCoord) || FindNodeOnList(CloseSet, NewCoord))
 			{
-				// remove the copy index
-				m_gridIndex.pop_back();
+				continue;
+			}
 
-				// replace the copy with the final index
-				m_gridIndex.push_back(m_finishGridIndex);
+			int TotalNodeCost = Current->G + 10;
 
-				break;
+			// If not in the open list, add it. Otherwise, each if the total cost for it is less increase it to the actual value
+			AStarNode* Succesor = FindNodeOnList(OpenSet, NewCoord);
+			if (!Succesor)
+			{
+				Succesor = new AStarNode(NewCoord, Current);
+				Succesor->G = TotalNodeCost;
+				Succesor->H = fabs(Succesor->Coordinate.x + Target.x) + fabs(Succesor->Coordinate.y + Target.y);
+				OpenSet.push_back(Succesor);
+			}
+			else if (Succesor && TotalNodeCost < Succesor->G)
+			{
+				Succesor->Parent = Current;
+				Succesor->G = TotalNodeCost;
 			}
 		}
 	}
 
-	m_gridIndex.push_back(m_finishGridIndex);
-	m_grids[startingGridIndex].visited = true;
-	return m_gridIndex;
-}
-
-void AStar::end(vec2 e)
-{
-	// size of the world (grids)
-	const int width = 10;
-	const int height = 10;
-
-	for (int i = 0; i < m_grids.size(); ++i)
-		m_grids[i].visited = false;
-
-	// find the grid we are in
-	for (size_t y = 0; y < width; ++y)
+	// Return the path and clean up
+	std::vector<vec2> Path;
+	while (Current)
 	{
-		for (size_t x = 0; x < width; ++x)
-		{
-			size_t index = y * width + x;
-
-			// test to see what grid we are in
-			if (e.x >= (x * 50.0f) && e.y >= (y * 50.0f) &&
-				e.x <= (x * 50.0f) + 50.0f && e.y <= (y * 50.0f + 50.0f))
-			{
-				m_endPosition.x = (x * 50.0f) + 25.0f;
-				m_endPosition.y = (y * 50.0f) + 25.0f;
-
-				m_finishGridIndex = (int)index;
-
-				// break from for loop
-				y = width;
-				x = width;
-			}
-		}
+		Path.push_back(Current->Coordinate);
+		Current = Current->Parent;
 	}
+
+	ReleaseNodes(OpenSet);
+	ReleaseNodes(CloseSet);
+	return Path;
 }

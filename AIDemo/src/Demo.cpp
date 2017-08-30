@@ -1,17 +1,18 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #include "Demo.h"
+#include <math.h>
 
 Demo::Demo()
 {
 	DemoWindow = new Window();
 	Renderer = SDL_CreateRenderer(DemoWindow->window(), -1, 0);
 	NewWorld = new TheNewWorld(30, 30);
-	Pathfinder = new AStarFast();
+	Pathfinder = new AStar();
 	ThePlayer = new Player();
 	IOEvents = new Events();
 	BotOne = new NPC(vec2(8, 8));
-	BotTwo = new NPC(vec2(1, 1));
+	BotTwo = new NPC(vec2(5, 16));
 
 	BotTwo->loadNewTexture("images/botB.bmp");
 	FloorTexture = new Texture("images/point.bmp");
@@ -29,7 +30,9 @@ Demo::Demo()
 	Pathfinder->AddCollision(vec2(2, 4));
 	Pathfinder->AddCollision(vec2(2, 5));
 	Pathfinder->AddCollision(vec2(5, 10));
+	Pathfinder->AddCollision(vec2(6, 10));
 	Pathfinder->AddCollision(vec2(6, 11));
+	Pathfinder->AddCollision(vec2(6, 12));
 	Pathfinder->AddCollision(vec2(7, 12));
 	Pathfinder->AddCollision(vec2(7, 13));
 	Pathfinder->AddCollision(vec2(6, 12));
@@ -38,11 +41,12 @@ Demo::Demo()
 	Pathfinder->AddCollision(vec2(4, 10));
 	Pathfinder->AddCollision(vec2(3, 10));
 	Pathfinder->AddCollision(vec2(13, 13));
+	Pathfinder->AddCollision(vec2(13, 14));
 	Pathfinder->AddCollision(vec2(14, 14));
 
 	Mouse = vec2(5, 5) * 20;
-	ThePlayer->Position(vec2(5, 5));
-	ThePlayer->createTexture(Renderer);
+	ThePlayer->SetPosition(vec2(5, 5));
+	ThePlayer->CreateTexture(Renderer);
 }
 
 Demo::~Demo()
@@ -60,22 +64,35 @@ Demo::~Demo()
 	delete DemoWindow;
 }
 
-void Demo::MoveTo(float& dt, Player& player, std::vector<vec2>& path)
+void Demo::MoveTo(float& dt, Player& APlayer, std::vector<vec2>& Path)
 {
-	vec2 Node = path.back();
+	vec2 Node = Path.back();
 
-	player.update(dt, Node);
+	APlayer.Update(dt, Node);
 
-	if (withinRange(player.getPosition(), Node))
+	if (withinRange(APlayer.GetPosition(), Node))
 	{
-		player.Position(Node);
-		path.pop_back();
+		APlayer.SetPosition(Node);
+		Path.pop_back();
 	}
 }
 
+void Demo::MoveTo(float& dt, NPC& ANPC, std::vector<vec2>& Path)
+{
+	vec2 Node = Path.back();
+
+	ANPC.update(dt, Node);
+
+	if (withinRange(ANPC.getPosition(), Node))
+	{
+		ANPC.Position(Node);
+		Path.pop_back();
+	}
+}
 
 void Demo::Update(float dt)
 {
+	// Handle input
 	switch (IOEvents->eventQueue())
 	{
 		case 100: GameLoop = false; break;
@@ -85,29 +102,72 @@ void Demo::Update(float dt)
 		case 4: MoveDirectionVector = (MoveDirectionVector == true) ? false : true; break; // turn on or off
 	}
 
+	// If the user has left clicked with the left mouse button on a grid, recompute path
 	if (0 == IOEvents->mouseQueue())
 	{
 		Mouse = IOEvents->getMouseLocation();
-		Path = Pathfinder->FindPath(ThePlayer->getPosition(), Mouse / 20);
+		Path = Pathfinder->FindPath(ThePlayer->GetPosition(), Mouse / 20);
 	}
 
-	if (ThePlayer->AtPathEnd)
+	// Find a path if the user is at the end of a path
+	if (ThePlayer->IsAtPathEnd())
 	{
-		ThePlayer->AtPathEnd = false;
-
-		Path = Pathfinder->FindPath(ThePlayer->getPosition(), Mouse / 20);
+		ThePlayer->SetAtPathEnd(false);
+		Path = Pathfinder->FindPath(ThePlayer->GetPosition(), Mouse / 20);
 	}
 
+	// Move the player
 	if (Path.size() > 0)
 	{
 		MoveTo(dt, *ThePlayer, Path);
 	}
 	else
 	{
-		ThePlayer->AtPathEnd = true;
+		ThePlayer->SetAtPathEnd(true);
 	}
 
 	ProcessLoS();
+
+	// If the Bot is in LoS of the Player and is not moving, create a path to move away
+	if (BotOne->IsPlayerInSight() && !BotOne->getIsMoving())
+	{
+		// Turn into a useable position for the pathfinder
+		vec2 ValidLocation((int)MoveAwayA.x, (int)MoveAwayA.y);
+
+		PathB1 = Pathfinder->FindPath(BotOne->getPosition(), ValidLocation);
+		PathB1.pop_back(); // This will be the current position the AI is in
+	}
+
+	// Move away from the player
+	if (PathB1.size() > 0)
+	{
+		MoveTo(dt, *BotOne, PathB1);
+	}
+	else
+	{
+		BotOne->isMoving(false);
+	}
+
+
+	// If the Bot is in LoS of the Player and is not moving, create a path to move away
+	if (BotTwo->IsPlayerInSight() && !BotTwo->getIsMoving())
+	{
+		// Turn into a useable position for the pathfinder
+		vec2 ValidLocation((int)MoveAwayB.x, (int)MoveAwayB.y);
+
+		PathB2 = Pathfinder->FindPath(BotTwo->getPosition(), ValidLocation);
+		PathB2.pop_back(); // This will be the current position the AI is in
+	}
+
+	// Move away from the player
+	if (PathB2.size() > 0)
+	{
+		MoveTo(dt, *BotTwo, PathB2);
+	}
+	else
+	{
+		BotTwo->isMoving(false);
+	}
 }
 
 void Demo::Draw()
@@ -127,6 +187,26 @@ void Demo::Draw()
 		SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
 	}
 
+	for (int i = 0; i < PathB1.size(); ++i)
+	{
+		SDL_Rect destRect;
+		destRect.w = 20.f;
+		destRect.h = 20.f;
+		destRect.x = PathB1[i].x * 20.f;
+		destRect.y = PathB1[i].y * 20.f;
+		SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
+	}
+
+	for (int i = 0; i < PathB2.size(); ++i)
+	{
+		SDL_Rect destRect;
+		destRect.w = 20.f;
+		destRect.h = 20.f;
+		destRect.x = PathB2[i].x * 20.f;
+		destRect.y = PathB2[i].y * 20.f;
+		SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
+	}
+
 	// draw walls
 	std::vector<vec2> Walls = Pathfinder->GetCollisions();
 	for (int i = 0; i < Walls.size(); ++i)
@@ -139,29 +219,31 @@ void Demo::Draw()
 		SDL_RenderCopy(Renderer, WallTexture->texture(), NULL, &destRect);
 	}
 
-	ThePlayer->draw(Renderer);
+	ThePlayer->Draw(Renderer);
 	BotOne->draw(Renderer);
 	BotTwo->draw(Renderer);
 
 	// draw certain visuals if they are turned on or not
 	if (LineOfSight)
 	{
-		SDL_RenderDrawLine(Renderer, (InSight.x * 20) + 10, (InSight.y * 20) + 10, 
-											(ThePlayer->getPosition().x * 20) + 10, (ThePlayer->getPosition().y * 20) + 10);
-		//SDL_RenderDrawLine(Renderer, inSightOfB.x, inSightOfB.y, player.getPosition().x, player.getPosition().y);
+		SDL_RenderDrawLine(Renderer, (PlayerInSightA.x * 20) + 10, (PlayerInSightA.y * 20) + 10,
+											(ThePlayer->GetPosition().x * 20) + 10, (ThePlayer->GetPosition().y * 20) + 10);
+		SDL_RenderDrawLine(Renderer, (PlayerInSightB.x * 20) + 10, (PlayerInSightB.y * 20) + 10,
+											(ThePlayer->GetPosition().x * 20) + 10, (ThePlayer->GetPosition().y * 20) + 10);
 		//SDL_RenderDrawLine(Renderer, inSightB.x, inSightB.y, botTwo.getPosition().x, botTwo.getPosition().y);
 	}
 	if (MoveDirectionVector)
 	{
-		//SDL_RenderDrawLine(Renderer, moveAwayA.x, moveAwayA.y, botOne.getPosition().x, botOne.getPosition().y);
-		//SDL_RenderDrawLine(Renderer, moveAwayB.x, moveAwayB.y, botTwo.getPosition().x, botTwo.getPosition().y);
+		SDL_RenderDrawLine(Renderer, (BotOne->getPosition().x * 20) + 10, (BotOne->getPosition().y * 20) + 10, 
+											 (MoveAwayA.x * 20) + 10 , (MoveAwayA.y * 20) + 10);
+		SDL_RenderDrawLine(Renderer, (BotTwo->getPosition().x * 20) + 10, (BotTwo->getPosition().y * 20) + 10,
+											(MoveAwayB.x * 20) + 10, (MoveAwayB.y * 20) + 10);
 	}
 	for (int x = 0; x < 30 * 20; x += 20)
 	{
 		SDL_RenderDrawLine(Renderer, 0, x, 600, x);
 		SDL_RenderDrawLine(Renderer, x, 0, x, 600);
 	}
-
 
 	SDL_RenderPresent(Renderer);
 }
@@ -170,156 +252,73 @@ void Demo::ProcessLoS()
 {
 	rayCast RaySight;
 
-	// generate direction vectors between origin and target (i.e botOne to Player)
-	vec2 direction(BotOne->getPosition().x - ThePlayer->getPosition().x, BotOne->getPosition().y - ThePlayer->getPosition().y);
-	InSight = RaySight.cast(ThePlayer->getPosition(), direction, length(BotOne->getPosition() - ThePlayer->getPosition()));
-	std::vector<vec2> points;
+	// Generate direction vectors between origin and target (i.e BotOne to Player)
+	vec2 DirectionToA(BotOne->getPosition().x - ThePlayer->GetPosition().x, BotOne->getPosition().y - ThePlayer->GetPosition().y);
+	PlayerInSightA = RaySight.cast(ThePlayer->GetPosition(), DirectionToA, length(BotOne->getPosition() - ThePlayer->GetPosition()));
+	std::vector<vec2> PointsToA;
 	
 	// get all the grids that intersect the line of sight
-	//points = RaySight.bresenhamLine(ThePlayer->getPosition(), BotOne->getPosition());
-	//
-	//for (int x = 0; x < points.size(); x++)
-	//{
-	//	for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
-	//	{
-	//		if (Pathfinder->DetectCollision(points[x]))
-	//		{
-	//			InSight = points[x];
-	//		}
-	//	}
-	//}
+	PointsToA = RaySight.bresenhamLine(ThePlayer->GetPosition(), BotOne->getPosition());
+	bool HitTarget = true;
 
-	// player LoS to botTwo
-	//vec2 directionToB(BotTwo->getPosition().x - ThePlayer->getPosition().x, BotTwo->getPosition().y - ThePlayer->getPosition().y);
-	//vec2 inSightOfB = RaySight.cast(ThePlayer->getPosition(), directionToB, length(BotTwo->getPosition() - ThePlayer->getPosition()));
-	//std::vector<vec2> pointsToB;
-	//
-	//// get all the grids that intersect the line of sight
-	//pointsToB = RaySight.bresenhamLine(ThePlayer->getPosition(), BotTwo->getPosition());
-	//for (int i = 0; i < pointsToB.size(); i++)
-	//{
-	//	for (int ii = 0; ii < WALL_COUNT; ii++)
-	//	{
-	//		// if line enters a wall grid then limit LoS to the distance
-	//		if (getIndex(pointsToB[i]) == walls[ii].getIndex())
-	//		{
-	//			inSightOfB = pointsToB[i];
-	//			break;
-	//		}
-	//
-	//		if (pointsToB.size() == 1)
-	//		{
-	//			inSightOfB = pointsToB[i];
-	//			break;
-	//		}
-	//	}
-	//}
-	//
-	//// is within line of sight and needs a new path
-	//int tempGridIndex = getIndex(inSight);
-	//vec2 moveAwayA;
-	//if (tempGridIndex == getIndex(BotOne->getPosition()))
-	//{
-	//	vec2 tempA(BotOne->getPosition().x, BotOne->getPosition().y);
-	//	vec2 tempB(ThePlayer->getPosition().x, ThePlayer->getPosition().y);
-	//	moveAwayA = RaySight.cast(ThePlayer->getPosition(), direction, length(tempA - tempB) + 50.0f);
-	//
-	//	// make sure bot doesn't get stuck within a corner
-	//	switch (getIndex(BotOne->getPosition()))
-	//	{
-	//	case 0:
-	//		moveAwayA.x += 50.0f;
-	//		moveAwayA.y += 50.0f;
-	//		break;
-	//	case 9:
-	//		moveAwayA.x -= 50.0f;
-	//		moveAwayA.y += 50.0f;
-	//		break;
-	//	case 90:
-	//		moveAwayA.x += 50.0f;
-	//		moveAwayA.y -= 50.0f;
-	//		break;
-	//	case 99:
-	//		moveAwayA.x -= 50.0f;
-	//		moveAwayA.y -= 50.0f;
-	//		break;
-	//	default: break; ///< not in the corner
-	//	}
-	//}
+	for (int x = 0; x < PointsToA.size(); x++)
+	{
+		for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
+		{
+			if (Pathfinder->DetectCollision(PointsToA[x]))
+			{
+				PlayerInSightA = PointsToA[x];
+				HitTarget = false;
+				break;
+			}
+		}
+	}
+
+	// Is within line of sight and needs a new path to move away
+	if (HitTarget)
+	{
+		vec2 tempA(BotOne->getPosition().x, BotOne->getPosition().y);
+		vec2 tempB(ThePlayer->GetPosition().x, ThePlayer->GetPosition().y);
+		MoveAwayA = RaySight.cast(ThePlayer->GetPosition(), DirectionToA, length(tempB - tempA) + 3.0f);
+		BotOne->SetPlayerInSight(true);
+	}
+	else
+	{
+		BotOne->SetPlayerInSight(false);
+	}
+
+	// Player LoS to bBotTwo
+	vec2 DirectionToB(BotTwo->getPosition().x - ThePlayer->GetPosition().x, BotTwo->getPosition().y - ThePlayer->GetPosition().y);
+	PlayerInSightB = RaySight.cast(ThePlayer->GetPosition(), DirectionToB, length(BotTwo->getPosition() - ThePlayer->GetPosition()));
+	std::vector<vec2> PointsToB;
 	
-	//// LoS between botOne and botTwo
-	//vec2 directionB(BotOne->getPosition().x - BotTwo->getPosition().x, BotOne->getPosition().y - BotTwo->getPosition().y);
-	//vec2 inSightB = RaySight.cast(BotTwo->getPosition(), directionB, length(BotOne->getPosition() - BotTwo->getPosition()));
-	//std::vector<vec2> pointsB;
-	//
-	//// get all the grids that intersect the line of sight
-	//pointsB = RaySight.bresenhamLine(BotTwo->getPosition(), BotOne->getPosition());
-	//for (int i = 0; i < pointsB.size(); i++)
-	//{
-	//	for (int ii = 0; ii < WALL_COUNT; ii++)
-	//	{
-	//		// if line enters a wall grid then limit LoS to the distance
-	//		if (getIndex(pointsB[i]) == walls[ii].getIndex())
-	//		{
-	//			inSightB = pointsB[i];
-	//			break;
-	//		}
-	//
-	//		if (pointsB.size() == 1)
-	//		{
-	//			inSightB = pointsB[i];
-	//			break;
-	//		}
-	//	}
-	//}
-	//
-	//// move towards botA (this will be overwritten in switch below if in LoS of the player!)
-	//tempGridIndex = getIndex(inSightB);
-	//if (tempGridIndex == getIndex(BotOne->getPosition()))
-	//{
-	//	// prevents BotB entering the same grid as BotA or overlapping BotB
-	//	vec2 tempA(BotOne->getPosition().x, BotOne->getPosition().y);
-	//	vec2 tempB(BotTwo->getPosition().x, BotTwo->getPosition().y);
-	//	vec2 moveTowardsA = RaySight.cast(BotTwo->getPosition(), directionB, length(tempA - tempB) - 50.0f);
-	//}
-	//
-	//
-	//tempGridIndex = getIndex(inSightOfB);
-	//vec2 moveAwayB;
-	//if (tempGridIndex == getIndex(BotTwo->getPosition()))
-	//{
-	//	vec2 tempA(botTwo.getPosition().x, botTwo.getPosition().y);
-	//	vec2 tempB(player.getPosition().x, player.getPosition().y);
-	//	moveAwayB = raySight.cast(player.getPosition(), directionToB, length(tempA - tempB) + 50.0f);
-	//	
-	//	// make sure bot doesn't get stuck within a corner
-	//	switch (getIndex(botTwo.getPosition()))
-	//	{
-	//	case 0: 
-	//		moveAwayB.x += 50.0f;
-	//		moveAwayB.y += 50.0f;
-	//		botBPathfinding.end(moveAwayB);
-	//		break;
-	//	case 9: 
-	//		moveAwayB.x -= 50.0f;
-	//		moveAwayB.y += 50.0f;
-	//		botBPathfinding.end(moveAwayB);
-	//		break;
-	//	case 90: 
-	//		moveAwayB.x += 50.0f;
-	//		moveAwayB.y -= 50.0f;
-	//		botBPathfinding.end(moveAwayB);
-	//		break;
-	//	case 99:
-	//		moveAwayB.x -= 50.0f;
-	//		moveAwayB.y -= 50.0f;
-	//		botBPathfinding.end(moveAwayB);
-	//		break;
-	//	default: botBPathfinding.end(moveAwayB); break; ///< not in the corner
-	//	}
-	//}
-	
-	// run pathfinding for bots
-	//botPathfinding.start(botOne.getPosition());
-	//path = botPathfinding.compute();
+	// Get all the grids that intersect the line of sight
+	PointsToB = RaySight.bresenhamLine(ThePlayer->GetPosition(), BotTwo->getPosition());
+	HitTarget = true;
+
+	for (int x = 0; x < PointsToB.size(); x++)
+	{
+		for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
+		{
+			if (Pathfinder->DetectCollision(PointsToB[x]))
+			{
+				PlayerInSightB = PointsToB[x];
+				HitTarget = false;
+				break;
+			}
+		}
+	}
+
+	// Is within line of sight and needs a new path to move away
+	if (HitTarget)
+	{
+		vec2 tempA(BotTwo->getPosition().x, BotTwo->getPosition().y);
+		vec2 tempB(ThePlayer->GetPosition().x, ThePlayer->GetPosition().y);
+		MoveAwayB = RaySight.cast(ThePlayer->GetPosition(), DirectionToB, length(tempB - tempA) + 3.0f);
+		BotTwo->SetPlayerInSight(true);
+	}
+	else
+	{
+		BotTwo->SetPlayerInSight(false);
+	}
 }

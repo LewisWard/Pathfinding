@@ -16,8 +16,8 @@ public:
 
 	/// \brief Constr
 	/// \prama vec2 starting position
-
 	NPC(vec2 startPosition);
+
 	/// \brief Destr
 	~NPC();
 
@@ -40,42 +40,41 @@ public:
 
 	/// \brief create the texture
 	/// \prama SDL_Renderer* renderer
-	inline void createTexture(SDL_Renderer* r)
-	{ m_texture->createTexture(r); }
+	inline void createTexture(SDL_Renderer* r) { m_texture->createTexture(r); }
 
 	/// \brief set current position
 	/// \prama vec2 position
-	inline void Position(vec2 p)
-	{ m_position = p; }
+	inline void Position(vec2 p) { m_position = p; }
 
 	/// \brief get current position
 	/// \return vec2 position
-	inline vec2 getPosition()
-	{ return m_position; }
+	inline vec2 getPosition()	{ return m_position; }
 
 	/// \brief set current destination position
 	/// \prama vec2 position
-	inline void moveToPosition(vec2 p)
-	{ m_moveToPosition = p; }
+	inline void moveToPosition(vec2 p) { m_moveToPosition = p; }
 
 	/// \brief get current destination position
 	/// \prama vec2 position
-	inline vec2 getMoveToPosition()
-	{ return m_moveToPosition; }
+	inline vec2 getMoveToPosition() { return m_moveToPosition; }
 
 	/// \brief set is the NPC is moving or not
 	/// \prama bool
-	inline void isMoving(bool m)
-	{ m_moving = m; }
+	inline void isMoving(bool m) { m_moving = m; }
 
 	/// \brief get is the NPC is moving or not
 	/// \prama bool
-	inline bool getIsMoving()
-	{ return m_moving; }
+	inline bool getIsMoving() { return m_moving; }
+
+
+	inline void SetPlayerInSight(bool s) { SeePlayer = s; }
+
+	inline bool IsPlayerInSight() { return SeePlayer; }
 
 private:
 	vec2 m_position; ///< current position
 	vec2 m_moveToPosition; ///< current destination
 	Texture* m_texture; ///< texture
 	bool m_moving; ///< is the NPC moving
+	bool SeePlayer = false;
 };

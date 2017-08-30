@@ -1,6 +1,7 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #include "Demo.h"
+#include "vld.h"
 
 int main(int argc, char *argv[])
 {

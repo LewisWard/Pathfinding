@@ -56,18 +56,18 @@ std::vector<vec2> rayCast::bresenhamLine(vec2 a, vec2 b)
 	float deltaX = b.x - a.x;
 	float deltaY = abs(b.y - a.y);
 	int error = 0;
-	int yStep = 2.0f;
+	int rayStep = 1.0f;
 	float y = a.y;
 	
 	if (a.y < b.y)
-		yStep = 2.0f;
+		rayStep = 1.0f;
 	else
-		yStep = -2.0f;
+		rayStep = -1.0f;
 	
 	// if not on the same X axis
 	if (a.x != b.x)
 	{
-		for (float x = a.x; x <= b.x; x += 2.0f)
+		for (float x = a.x; x <= b.x; x += 1.0f)
 		{
 			// make sure vec2 has the x and y the correct way round
 			if (step)
@@ -78,9 +78,9 @@ std::vector<vec2> rayCast::bresenhamLine(vec2 a, vec2 b)
 			// increase
 			error += deltaY;
 
-			if (2 * error >= deltaX)
+			if (1 * error >= deltaX)
 			{
-				y += yStep;
+				y += rayStep;
 				error -= deltaX;
 			}
 		}
@@ -89,10 +89,10 @@ std::vector<vec2> rayCast::bresenhamLine(vec2 a, vec2 b)
 	{
 		// are we above or below the target?
 		if (b.y < a.y)
-			for (float x = b.y; x <= a.y; x += 2.0f)
+			for (float x = b.y; x <= a.y; x += 1.0f)
 				collisionPoints.push_back(vec2(y, x));
 		else
-			for (float x = b.y; x >= a.y; x -= 2.0f)
+			for (float x = b.y; x >= a.y; x -= 1.0f)
 				collisionPoints.push_back(vec2(y, x));
 	}
 

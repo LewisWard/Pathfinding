@@ -53,7 +53,7 @@ void NPC::update(float dt, vec2 newPosition)
 {
 	m_moving = true;
 	// movement speed
-	float speed = 5.25f;
+	float speed = 2.25f;
 	// move closer to the next waypoint
 	float xMove = (newPosition.x - m_position.x) * speed * dt;
 	float yMove = (newPosition.y - m_position.y) * speed * dt;

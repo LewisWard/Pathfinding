@@ -20,33 +20,36 @@ public:
 
 	/// \brief draw the player
 	/// \prama SDL_Renderer* renderer
-	void draw(SDL_Renderer* r);
+	void Draw(SDL_Renderer* r);
 
 	/// \brief update the player
 	/// \prama float delta time
 	/// \prama vec2 new position to move to
-	void update(float dt, vec2 newPosition);
+	void Update(float dt, vec2 newPosition);
 
 	/// \brief create the texture
 	/// \prama SDL_Renderer* renderer
-	inline void createTexture(SDL_Renderer* r)
-	{ m_texture->createTexture(r); }
+	inline void CreateTexture(SDL_Renderer* r) { PlayerTexture->createTexture(r); }
 
 	/// \brief set current position
 	/// \prama vec2 position
-	inline void Position(vec2 p)
-	{ m_position = p; }
+	inline void SetPosition(vec2 p) { Position = p; }
 
 	/// \brief get current position
 	/// \return vec2 position
-	inline vec2 getPosition()
-	{ return m_position; }
+	inline vec2 GetPosition() { return Position; }
+
+	inline void SetPathTarget(vec2 p) { PathTarget = p; }
+
+	inline vec2 GetPathTarget() { return PathTarget; }
+
+	inline void SetAtPathEnd(bool b) { AtPathEnd = b; }
+
+	inline bool IsAtPathEnd() { return AtPathEnd; }
 
 private:
-	vec2 m_position; ///< current position
-	Texture* m_texture = nullptr; ///< texture
-
-public:
-	bool AtPathEnd = true;
+	Texture* PlayerTexture = nullptr;
+	vec2 Position; ///< current position
 	vec2 PathTarget;
+	bool AtPathEnd = true;
 };

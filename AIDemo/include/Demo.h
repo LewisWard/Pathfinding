@@ -34,8 +34,5 @@ private:
 	Events* IOEvents;
 	vec2 Mouse;
 	bool GameLoop = true;
-	bool LineOfSight = true;
 	bool DrawPaths = true;
-	bool DrawGrids = true;
-	bool MoveDirectionVector = true;
 };

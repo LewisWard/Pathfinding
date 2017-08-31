@@ -13,16 +13,6 @@ Player::~Player()
 	// ActorTexture is deleted by ~Actor
 }
 
-//void Player::Draw(SDL_Renderer* r)
-//{
-//	SDL_Rect destRect;
-//	destRect.w = 20;
-//	destRect.h = 20;
-//	destRect.x = Position.x * 20;
-//	destRect.y = Position.y * 20;
-//	SDL_RenderCopy(r, PlayerTexture->texture(), NULL, &destRect);
-//}
-
 void Player::Update(float dt)
 {
 		// movement speed

@@ -11,7 +11,7 @@ Demo::Demo()
 	Pathfinder = new AStar();
 	ThePlayer = new Player(vec2(5, 5), Pathfinder, &Mouse);
 	IOEvents = new Events();
-	BotOne = new NPC(vec2(8, 8), Pathfinder, ThePlayer);
+	BotOne = new NPC(vec2(8, 5), Pathfinder, ThePlayer);
 	BotTwo = new NPC(vec2(5, 16), Pathfinder, ThePlayer);
 
 	BotTwo->loadNewTexture("images/botB.bmp");
@@ -43,15 +43,15 @@ Demo::Demo()
 	Pathfinder->AddCollision(vec2(13, 13));
 	Pathfinder->AddCollision(vec2(13, 14));
 	Pathfinder->AddCollision(vec2(14, 14));
-
-
-	Pathfinder->AddCollision(vec2(9, 7));
-	Pathfinder->AddCollision(vec2(9, 8));
-	Pathfinder->AddCollision(vec2(9, 9));
+	
+	
+	Pathfinder->AddCollision(vec2(7, 4));
+	Pathfinder->AddCollision(vec2(7, 5));
+	Pathfinder->AddCollision(vec2(7, 6));
 	Pathfinder->AddCollision(vec2(10, 10));
 	Pathfinder->AddCollision(vec2(8, 9));
 
-	Mouse = vec2(5, 5) * 20;
+	Mouse = ThePlayer->GetLocation() * 20;
 	ThePlayer->CreateTexture(Renderer);
 }
 
@@ -72,14 +72,11 @@ Demo::~Demo()
 
 void Demo::Update(float dt)
 {
-	// Handle input
+	// Handle input, Esc key to quit and D key to draw paths (On/Off)
 	switch (IOEvents->eventQueue())
 	{
 		case 100: GameLoop = false; break;
-		case 1: LineOfSight = (LineOfSight == true) ? false : true; break; // turn on or off
-		case 2: DrawPaths = (DrawPaths == true) ? false : true; break; // turn on or off
-		case 3: DrawGrids = (DrawGrids == true) ? false : true; break; // turn on or off
-		case 4: MoveDirectionVector = (MoveDirectionVector == true) ? false : true; break; // turn on or off
+		case 4: DrawPaths = (DrawPaths == true) ? false : true; break;
 	}
 
 	// If the user has left clicked with the left mouse button on a grid, recompute path
@@ -90,7 +87,6 @@ void Demo::Update(float dt)
 	}
 
 	ThePlayer->Update(dt);
-
 	BotOne->Update(dt);
 	BotTwo->Update(dt);
 }
@@ -102,34 +98,43 @@ void Demo::Draw()
 
 	NewWorld->draw(Renderer);
 
-	for (int i = 0; i < ThePlayer->GetPath().size(); ++i)
+	if (DrawPaths)
 	{
-		SDL_Rect destRect;
-		destRect.w = 20.f;
-		destRect.h = 20.f;
-		destRect.x = ThePlayer->GetPath()[i].x * 20.f;
-		destRect.y = ThePlayer->GetPath()[i].y * 20.f;
-		SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
-	}
+		for (int i = 0; i < ThePlayer->GetPath().size(); ++i)
+		{
+			SDL_Rect destRect;
+			destRect.w = 20.f;
+			destRect.h = 20.f;
+			destRect.x = ThePlayer->GetPath()[i].x * 20.f;
+			destRect.y = ThePlayer->GetPath()[i].y * 20.f;
+			SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
+		}
 
-	for (int i = 0; i < BotOne->GetPath().size(); ++i)
-	{
-		SDL_Rect destRect;
-		destRect.w = 20.f;
-		destRect.h = 20.f;
-		destRect.x = BotOne->GetPath()[i].x * 20.f;
-		destRect.y = BotOne->GetPath()[i].y * 20.f;
-		SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
-	}
+		for (int i = 0; i < BotOne->GetPath().size(); ++i)
+		{
+			SDL_Rect destRect;
+			destRect.w = 20.f;
+			destRect.h = 20.f;
+			destRect.x = BotOne->GetPath()[i].x * 20.f;
+			destRect.y = BotOne->GetPath()[i].y * 20.f;
+			SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
+		}
 
-	for (int i = 0; i < BotTwo->GetPath().size(); ++i)
-	{
-		SDL_Rect destRect;
-		destRect.w = 20.f;
-		destRect.h = 20.f;
-		destRect.x = BotTwo->GetPath()[i].x * 20.f;
-		destRect.y = BotTwo->GetPath()[i].y * 20.f;
-		SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
+		for (int i = 0; i < BotTwo->GetPath().size(); ++i)
+		{
+			SDL_Rect destRect;
+			destRect.w = 20.f;
+			destRect.h = 20.f;
+			destRect.x = BotTwo->GetPath()[i].x * 20.f;
+			destRect.y = BotTwo->GetPath()[i].y * 20.f;
+			SDL_RenderCopy(Renderer, FloorTexture->texture(), NULL, &destRect);
+		}
+
+		for (int x = 0; x < 30 * 20; x += 20)
+		{
+			SDL_RenderDrawLine(Renderer, 0, x, 600, x);
+			SDL_RenderDrawLine(Renderer, x, 0, x, 600);
+		}
 	}
 
 	// draw walls
@@ -147,28 +152,6 @@ void Demo::Draw()
 	ThePlayer->Draw(Renderer);
 	BotOne->Draw(Renderer);
 	BotTwo->Draw(Renderer);
-
-	// draw certain visuals if they are turned on or not
-	if (LineOfSight)
-	{
-		SDL_RenderDrawLine(Renderer, (BotOne->GetPlayerSightRay().x * 20) + 10, (BotOne->GetPlayerSightRay().y * 20) + 10,
-											(ThePlayer->GetLocation().x * 20) + 10, (ThePlayer->GetLocation().y * 20) + 10);
-		SDL_RenderDrawLine(Renderer, (BotTwo->GetPlayerSightRay().x * 20) + 10, (BotTwo->GetPlayerSightRay().y * 20) + 10,
-											(ThePlayer->GetLocation().x * 20) + 10, (ThePlayer->GetLocation().y * 20) + 10);
-		//SDL_RenderDrawLine(Renderer, inSightB.x, inSightB.y, botTwo.getPosition().x, botTwo.getPosition().y);
-	}
-	if (MoveDirectionVector)
-	{
-		SDL_RenderDrawLine(Renderer, (BotOne->GetLocation().x * 20) + 10, (BotOne->GetLocation().y * 20) + 10,
-											 (BotOne->GetMoveAwayDirection().x * 20) + 10 , (BotOne->GetMoveAwayDirection().y * 20) + 10);
-		SDL_RenderDrawLine(Renderer, (BotTwo->GetLocation().x * 20) + 10, (BotTwo->GetLocation().y * 20) + 10,
-											(BotTwo->GetMoveAwayDirection().x * 20) + 10, (BotTwo->GetMoveAwayDirection().y * 20) + 10);
-	}
-	for (int x = 0; x < 30 * 20; x += 20)
-	{
-		SDL_RenderDrawLine(Renderer, 0, x, 600, x);
-		SDL_RenderDrawLine(Renderer, x, 0, x, 600);
-	}
 
 	SDL_RenderPresent(Renderer);
 }

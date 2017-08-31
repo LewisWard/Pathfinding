@@ -6,13 +6,11 @@ rayCast::rayCast()
 {
 	m_origin.x = 0; 
 	m_origin.y = 0;
-	m_collide = false;
 }
 
 rayCast::rayCast(vec2 origin)
 {
 	m_origin = origin;
-	m_collide = false;
 }
 
 rayCast::~rayCast()
@@ -22,6 +20,8 @@ rayCast::~rayCast()
 
 vec2 rayCast::cast(vec2 position, vec2 direction, float length)
 {
+	m_direction = direction; 
+
 	// make sure the ray has a length
 	if (length == 0)
 	{
@@ -30,80 +30,48 @@ vec2 rayCast::cast(vec2 position, vec2 direction, float length)
 		return returnVector;
 	}
 
-	vec2 secondPoint = position + (normalize(direction) * length);
+	vec2 secondPoint = position + (normalize(m_direction) * length);
 
 	//return points;
 	return secondPoint;
 }
 
-std::vector<vec2> rayCast::bresenhamLine(vec2 a, vec2 b)
-{
-	std::vector<vec2> collisionPoints;
-
-	bool step = abs(b.y - a.y) > abs(b.x - a.x);
-	
-	// if true need to swap vectors around
-	if (step)
-	{
-		swap(a, b);
-	}
-	
-	if (a.x > b.x)
-	{
-		swap(a, b);
-	}
-	
-	float deltaX = b.x - a.x;
-	float deltaY = abs(b.y - a.y);
-	int error = 0;
-	int rayStep = 1.0f;
-	float y = a.y;
-	
-	if (a.y < b.y)
-		rayStep = 1.0f;
-	else
-		rayStep = -1.0f;
-	
-	// if not on the same X axis
-	if (a.x != b.x)
-	{
-		for (float x = a.x; x <= b.x; x += 1.0f)
-		{
-			// make sure vec2 has the x and y the correct way round
-			if (step)
-				collisionPoints.push_back(vec2(x, y));
-			else
-				collisionPoints.push_back(vec2(x, y));
-
-			// increase
-			error += deltaY;
-
-			if (1 * error >= deltaX)
-			{
-				y += rayStep;
-				error -= deltaX;
-			}
-		}
-	}
-	else
-	{
-		// are we above or below the target?
-		if (b.y < a.y)
-			for (float x = b.y; x <= a.y; x += 1.0f)
-				collisionPoints.push_back(vec2(y, x));
-		else
-			for (float x = b.y; x >= a.y; x -= 1.0f)
-				collisionPoints.push_back(vec2(y, x));
-	}
-
-	// return the vector
-	return collisionPoints;
-}
-
 void rayCast::swap(vec2& a, vec2& b)
 {
-	// swap two vectors with each other
 	vec2 c = a;
 	a = b;
 	b = c;
+}
+
+bool rayCast::Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target)
+{
+	vec2 Direction = 1.f / (Target - Origin);
+
+	// Cycle all objects, check to see if target is in line of sight
+	for (size_t i = 0; i < Walls.size(); i++)
+	{
+		vec2 AWall = Walls[i];
+
+		vec2 LocationMin(AWall.x - 0.5f, AWall.y - 0.5f);
+		vec2 LocationMax(AWall.x + 0.5f, AWall.y + 0.5f);
+
+		float LocMinX = (LocationMin.x - Origin.x) * Direction.x;
+		float LocMaxX = (LocationMax.x - Origin.x) * Direction.x;
+		float LocMinY = (LocationMin.y - Origin.y) * Direction.y;
+		float LocMaxY = (LocationMax.y - Origin.y) * Direction.y;
+
+		if (LocMinX > LocMaxX)
+			std::swap(LocMinX, LocMaxX);
+
+		if (LocMinY > LocMaxY)
+			std::swap(LocMinY, LocMaxY);
+
+		// Did the ray miss the AABB around the location
+		if ((LocMinX > LocMaxY) || (LocMinY > LocMaxX))
+			continue;
+		else
+			return false;
+	}
+
+	return true;
 }

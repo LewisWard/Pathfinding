@@ -46,6 +46,14 @@ inline vec2 operator / (vec2 a, float b)
 	return c;
 }
 
+inline vec2 operator / (float b, vec2 a)
+{
+	vec2 c;
+	c.x = b / a.x;
+	c.y = b / a.y;
+	return c;
+}
+
 inline float dot(vec2 a, vec2 b)
 {
 	return (a.x * b.x) + (a.y * b.y);

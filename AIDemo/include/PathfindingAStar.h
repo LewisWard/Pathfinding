@@ -49,8 +49,6 @@ public:
 
 	std::vector<vec2> FindPath(vec2 Start, vec2 Target);
 
-	std::vector<vec2> FindPathAI(vec2 Start, vec2 Target);
-
 private:
 	std::vector<vec2> Directions, Walls;
 	vec2 WorldSize;

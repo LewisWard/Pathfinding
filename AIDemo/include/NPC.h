@@ -61,34 +61,16 @@ private:
 	{
 		rayCast RaySight;
 
-		// Generate direction vectors between origin and target (i.e BotOne to Player)
+		// Generate direction vectors between origin and target (i.e Bot to Player)
 		vec2 DirectionToPlayer(Location.x - APlayer->GetLocation().x, Location.y - APlayer->GetLocation().y);
 		PlayerInSightRay = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(Location - APlayer->GetLocation()));
-		std::vector<vec2> PointsToA;
 
-		// get all the grids that intersect the line of sight
-		PointsToA = RaySight.bresenhamLine(APlayer->GetLocation(), Location);
-		bool HitTarget = true;
-
-		for (int x = 0; x < PointsToA.size(); x++)
-		{
-			for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
-			{
-				if (Pathfinder->DetectCollision(PointsToA[x]))
-				{
-					PlayerInSightRay = PointsToA[x];
-					HitTarget = false;
-					break;
-				}
-			}
-		}
+		bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), APlayer->GetLocation(), Location);
 
 		// Is within line of sight and needs a new path to move away
 		if (HitTarget)
 		{
-			vec2 tempA(Location.x, Location.y);
-			vec2 tempB(APlayer->GetLocation().x, APlayer->GetLocation().y);
-			MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(tempB - tempA) + 3.0f);
+			MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(APlayer->GetLocation() - Location) + 3.0f);
 			SeePlayer = true;
 			return true;
 		}

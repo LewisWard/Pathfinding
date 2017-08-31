@@ -30,45 +30,34 @@ public:
 	vec2 cast(vec2 position, vec2 direction, float length);
 
 	/// \brief computes the position the ray intersected
+	/// \prama std::vector<vec2> collsion locations
 	/// \prama vec2 origin
 	/// \prama vec2 destination
-	/// \return std::vector<vec2> the position that the ray intersected
-	std::vector<vec2> bresenhamLine(vec2 a, vec2 b);
+	/// \return bool, true if no objects are intersected between the origin and target
+	bool Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target);
 
 	/// \brief sets the origin
 	/// \prama vec2 origin
-	inline void origin(vec2 o)
-	{ m_origin = o; }
+	inline void origin(vec2 o) { m_origin = o; }
 
 	/// \brief gets the origin
 	/// \return vec2 origin
-	inline vec2 getOrigin()
-	{ return m_origin; }
+	inline vec2 getOrigin() { return m_origin; }
 
-	/// \brief set if the ray intersect anything
-	/// \prama bool
-	inline void collide(bool c)
-	{ m_collide = c; }
+	/// \brief sets the direction
+	/// \prama vec2 direction
+	inline void SetDirection(vec2 o) { m_direction = o; }
 
-	/// \brief get if the ray intersect anything
-	/// \return bool
-	inline bool getCollide()
-	{ return m_collide; }
+	/// \brief gets the direction
+	/// \return vec2 direction
+	inline vec2 GetDirection() { return m_direction; }
 
 private:
 	vec2 m_origin; ///< the rays origin
-	bool m_collide; ///< true if collision happened
+	vec2 m_direction;
 
 	/// \brief swap two vec2's around 
 	/// \prama vec2 a
 	/// \prama vec2 b
 	void swap(vec2& a, vec2& b);
 };
-
-// Returns true if ray has a collsion with the target and no other object
-//bool RayCollsionTarget(vec2 RayOrigin, vec2 RayTarget, std::vector<Walls> ObjectOrigins)
-//{
-//	vec2 RayDirection = RayTarget - RayOrigin;
-//
-//	float Y = 
-//}

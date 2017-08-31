@@ -1,82 +1,73 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #include "World.h"
+#include <fstream>
+#include <string>
 
-World::World()
+World::World(int WorldMaxPosX, int WorldMaxPosY)
 {
-	float width = 10;
-
-	m_grids.resize(width * width);
-
-	for (size_t y = 0; y < width; ++y)
-	{
-		for (size_t x = 0; x < width; ++x)
-		{
-			size_t index = y * width + x;
-
-			m_grids[index].gridBounds.m_min.x = x * 50.0f;
-			m_grids[index].gridBounds.m_min.y = y * 50.0f;
-			m_grids[index].gridBounds.m_max.x = x * 50.0f + 50.0f;
-			m_grids[index].gridBounds.m_max.y = y * 50.0f + 50.0f;
-
-			m_grids[index].gridIndex = index;
-
-			m_grids[index].walkable = true;
-			m_grids[index].visited = false;
-			m_grids[index].cost = 0.0f;
-		}
-	}
-
-	for (int y = 0; y < width - 1; ++y)
-	{
-		for (int x = 0; x < width - 1; ++x)
-		{
-			m_indices.push_back((width * y) + x);
-			m_indices.push_back((width * y) + x + 1);
-			m_indices.push_back((width * y) + x + width);
-			m_indices.push_back((width * y) + x + 1);
-			m_indices.push_back((width * y) + x + width + 1);
-			m_indices.push_back((width * y) + x + width);
-		}
-	}
-
+	WorldMin = vec2(0.f, 0.f);
+	WorldMax = vec2(WorldMaxPosX * 25, WorldMaxPosY * 25);
+	WorldWidth = WorldMaxPosX * 25;
+	WorldHeight = WorldMaxPosY * 25;
 	m_texture = new Texture("images/floor.bmp");
+	Pathfinder = new AStar();
+
+	// set seed
+	srand(time(0));
 }
 
 World::~World()
 {
 	delete m_texture;
+	Pathfinder = nullptr;
 }
 
 void World::draw(SDL_Renderer* r)
 {
 	SDL_Rect destRect;
-	destRect.w = 50;
-	destRect.h = 50;
+	destRect.w = 1 + 25;
+	destRect.h = 1 + 25;
 
-	for (size_t i = 0; i < m_grids.size(); ++i)
+	for (int x = 0; x < WorldWidth; ++x)
 	{
-		destRect.x = m_grids[i].gridBounds.m_min.x;
-		destRect.y = m_grids[i].gridBounds.m_min.y;
-		SDL_RenderCopy(r, m_texture->texture(), NULL, &destRect);
+		for (int y = 0; y < WorldHeight; ++y)
+		{
+			destRect.x = x * 25;
+			destRect.y = y * 25;
+			SDL_RenderCopy(r, m_texture->texture(), NULL, &destRect);
+		}
 	}
 }
 
-int getIndex(vec2 position)
+void World::LoadMap(const char* Filename)
 {
-	// find the grid we are in
-	for (size_t y = 0; y < 10; ++y)
-	{
-		for (size_t x = 0; x < 10; ++x)
-		{
-			size_t index = y * 10 + x;
+	std::string FileLine;
+	std::ifstream InputFileStream(Filename);
 
-			// test to see what grid we are in
-			if (position.x >= (x * 50.0f) && position.y >= (y * 50.0f) &&
-				position.x <= (x * 50.0f) + 50.0f && position.y <= (y * 50.0f + 50.0f))
+	// Open the file
+	if (InputFileStream.is_open())
+	{
+		int LineIndex = 0;
+
+		// Not the end of the file yet
+		while (!InputFileStream.eof())
+		{
+			std::getline(InputFileStream, FileLine);
+
+			// For each char in the line, check the type to work out what it is
+			for (size_t i = 0; i < FileLine.length(); i++)
 			{
-				return (int)index;
+				// Find type of position				
+				if (FileLine[i] == 'w')
+				{
+					Pathfinder->AddCollision(vec2(i, LineIndex));
+				}
 			}
+
+			LineIndex++;
 		}
 	}
+
+	InputFileStream.close();
 }

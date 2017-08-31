@@ -57,28 +57,6 @@ private:
 	bool Moving; ///< is the NPC moving
 	bool SeePlayer = false;
 
-	bool ProcessLineOfSight()
-	{
-		rayCast RaySight;
-
-		// Generate direction vectors between origin and target (i.e Bot to Player)
-		vec2 DirectionToPlayer(Location.x - APlayer->GetLocation().x, Location.y - APlayer->GetLocation().y);
-		PlayerInSightRay = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(Location - APlayer->GetLocation()));
-
-		bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), APlayer->GetLocation(), Location);
-
-		// Is within line of sight and needs a new path to move away
-		if (HitTarget)
-		{
-			MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(APlayer->GetLocation() - Location) + 3.0f);
-			SeePlayer = true;
-			return true;
-		}
-		else
-		{
-			SeePlayer = false;
-			return false;
-		}
-	}
+	bool ProcessLineOfSight();
 	
 };

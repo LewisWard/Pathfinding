@@ -1,7 +1,10 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #pragma once
-#include "World.h"
+#include "Window.h"
+#include <vector>
+#include "Texture.h"
+#include "AABB.h"
 
 struct AStarNode
 {
@@ -37,7 +40,7 @@ public:
 	inline void SetWorldSize(int X, int Y) { WorldSize.x = X; WorldSize.y = Y; }
 	inline void ClearCollisions() { Walls.clear(); }
 	inline std::vector<vec2> GetCollisions() { return Walls; }
-	inline void AddCollision(vec2 Corrdinates) 	{	Walls.push_back(Corrdinates); }
+	inline void AddCollision(vec2 Corrdinates) { Walls.push_back(Corrdinates); }
 
 	void RemoveCollision(vec2 Coordinates);
 

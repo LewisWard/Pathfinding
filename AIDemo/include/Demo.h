@@ -28,7 +28,7 @@ private:
 	NPC* BotOne = nullptr;
 	NPC* BotTwo = nullptr;
 	SDL_Renderer* Renderer = nullptr;
-	TheNewWorld* NewWorld = nullptr;
+	World* TheWorld = nullptr;
 	AStar* Pathfinder = nullptr;
 	Player* ThePlayer;
 	Events* IOEvents;

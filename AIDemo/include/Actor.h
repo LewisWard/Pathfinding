@@ -6,7 +6,6 @@
 #include "Texture.h"
 #include "PathfindingAStar.h"
 #include "Ray.h"
-#include <time.h>
 
 class Actor
 {
@@ -40,9 +39,6 @@ public:
 	virtual void MoveTo(float& dt, std::vector<vec2>& Path)
 	{
 		TargetLocation = Path.back();
-
-		//Location.x += (Node.x - Location.x) * MovementSpeed * dt;
-		//Location.y += (Node.y - Location.y) * MovementSpeed * dt;
 
 		if (withinRange(Location, TargetLocation))
 		{

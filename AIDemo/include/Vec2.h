@@ -54,6 +54,17 @@ inline vec2 operator / (float b, vec2 a)
 	return c;
 }
 
+inline vec2 SafeDivide(float a, vec2 b)
+{
+	if (b.x == 0)
+		b.x = 1;
+
+	if (b.y == 0)
+		b.y = 1;
+
+	return a / b;
+}
+
 inline float dot(vec2 a, vec2 b)
 {
 	return (a.x * b.x) + (a.y * b.y);

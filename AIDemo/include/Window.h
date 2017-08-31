@@ -7,6 +7,13 @@
 #include "SDL\SDL_opengl.h"
 #include "Vec2.h"
 
+/// \brief setup delta time
+void initTimerDT();
+
+/// \brief update delta time
+/// \return delta time
+float updateTimerDT();
+
 class Window
 {
 public:

@@ -4,26 +4,19 @@
 
 NPC::NPC()
 {
-	// set seed
-	srand(time(0));
-
-	// load texture
 	ActorTexture = new Texture("images/bot.bmp");
 
 	Moving = false;
-	MovementSpeed = 1.25f;
+	MovementSpeed = 3.5f;
 	MoveAwayDirection = Location;
 }
 
 NPC::NPC(vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
 {
-	// set seed
-	srand(time(0));
-
 	Moving = false;
 	Location = StartPosition;
 	ActorTexture = new Texture("images/bot.bmp");
-	MovementSpeed = 1.25f;
+	MovementSpeed = 3.25f;
 	MoveAwayDirection = Location;
 	TargetLocation = Location;
 	Pathfinder = APathfinder;
@@ -69,5 +62,36 @@ void NPC::Update(float dt)
 	{
 		isMoving(false);
 	}
+}
 
+bool NPC::ProcessLineOfSight()
+{
+	rayCast RaySight;
+
+	// Generate direction vectors between origin and target (i.e Bot to Player)
+	vec2 DirectionToPlayer(Location.x - APlayer->GetLocation().x, Location.y - APlayer->GetLocation().y);
+	PlayerInSightRay = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(Location - APlayer->GetLocation()));
+
+	bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), APlayer->GetLocation(), Location);
+
+	float Range = 2.0f;
+	MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(APlayer->GetLocation() - Location) + Range);
+
+	while (Pathfinder->DetectCollision(MoveAwayDirection) && Range < 8.0f)
+	{
+		Range++;
+		MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(APlayer->GetLocation() - Location) + Range);
+	}
+	
+	// Is within line of sight and needs a new path to move away
+	if (HitTarget)
+	{
+		SeePlayer = true;
+		return true;
+	}
+	else
+	{
+		SeePlayer = false;
+		return false;
+	}
 }

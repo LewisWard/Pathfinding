@@ -15,9 +15,6 @@ public:
 
 	~Demo();
 
-	void MoveTo(float& dt, Player& player, std::vector<vec2>& path);
-	void MoveTo(float& dt, NPC& ANPC, std::vector<vec2>& Path);
-
 	void Update(float dt);
 
 	void Draw();

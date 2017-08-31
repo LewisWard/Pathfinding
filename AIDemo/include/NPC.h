@@ -1,80 +1,100 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #pragma once
+#include "Actor.h"
 #include "Player.h"
-#include "Ray.h"
-#include <time.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 /// \brief  NPC/Bots characters
 //----------------------------------------------------------------------------------------------------------------------
-class NPC
+class NPC : public Actor
 {
 public:
 	/// \brief Constr
 	NPC();
 
 	/// \brief Constr
-	/// \prama vec2 starting position
-	NPC(vec2 startPosition);
+	NPC(vec2 StartPosition, AStar* APathfinder, Player* ThePlayer);
 
 	/// \brief Destr
 	~NPC();
 
-	/// \brief draw the NPC
-	/// \prama SDL_Renderer* renderer
-	void draw(SDL_Renderer* r);
-
 	/// \brief update the NPC
 	/// \prama float delta time
 	/// \prama vec2 new position to move to
-	void update(float dt, vec2 newPosition);
+	void Update(float dt) override;
 
-	/// \brief generate to new position
-	/// \return vec2 position
-	vec2 genMoveTo();
+	//void MoveTo(float& dt, std::vector<vec2>& Path) override;
 
 	/// \brief load a new texture
 	/// \prama char* texture file name
 	void loadNewTexture(const char* texture);
 
-	/// \brief create the texture
-	/// \prama SDL_Renderer* renderer
-	inline void createTexture(SDL_Renderer* r) { m_texture->createTexture(r); }
-
-	/// \brief set current position
-	/// \prama vec2 position
-	inline void Position(vec2 p) { m_position = p; }
-
-	/// \brief get current position
-	/// \return vec2 position
-	inline vec2 getPosition()	{ return m_position; }
-
-	/// \brief set current destination position
-	/// \prama vec2 position
-	inline void moveToPosition(vec2 p) { m_moveToPosition = p; }
-
-	/// \brief get current destination position
-	/// \prama vec2 position
-	inline vec2 getMoveToPosition() { return m_moveToPosition; }
-
 	/// \brief set is the NPC is moving or not
 	/// \prama bool
-	inline void isMoving(bool m) { m_moving = m; }
+	inline void isMoving(bool M) { Moving = M; }
 
 	/// \brief get is the NPC is moving or not
 	/// \prama bool
-	inline bool getIsMoving() { return m_moving; }
+	inline bool getIsMoving() { return Moving; }
 
-
-	inline void SetPlayerInSight(bool s) { SeePlayer = s; }
+	inline void SetPlayerInSight(bool S) { SeePlayer = S; }
 
 	inline bool IsPlayerInSight() { return SeePlayer; }
 
+	inline const std::vector<vec2>& GetPath() { return Path; }
+
+	inline vec2 GetPlayerSightRay() { return PlayerInSightRay; }
+
 private:
-	vec2 m_position; ///< current position
-	vec2 m_moveToPosition; ///< current destination
-	Texture* m_texture; ///< texture
-	bool m_moving; ///< is the NPC moving
+	std::vector<vec2> Path;
+	AStar* Pathfinder = nullptr;
+	Player* APlayer = nullptr;
+	vec2 MoveAwayDirection;
+	vec2 PlayerInSightRay;
+	bool Moving; ///< is the NPC moving
 	bool SeePlayer = false;
+
+	bool ProcessLineOfSight()
+	{
+		rayCast RaySight;
+
+		// Generate direction vectors between origin and target (i.e BotOne to Player)
+		vec2 DirectionToPlayer(Location.x - APlayer->GetLocation().x, Location.y - APlayer->GetLocation().y);
+		PlayerInSightRay = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(Location - APlayer->GetLocation()));
+		std::vector<vec2> PointsToA;
+
+		// get all the grids that intersect the line of sight
+		PointsToA = RaySight.bresenhamLine(APlayer->GetLocation(), Location);
+		bool HitTarget = true;
+
+		for (int x = 0; x < PointsToA.size(); x++)
+		{
+			for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
+			{
+				if (Pathfinder->DetectCollision(PointsToA[x]))
+				{
+					PlayerInSightRay = PointsToA[x];
+					HitTarget = false;
+					break;
+				}
+			}
+		}
+
+		// Is within line of sight and needs a new path to move away
+		if (HitTarget)
+		{
+			vec2 tempA(Location.x, Location.y);
+			vec2 tempB(APlayer->GetLocation().x, APlayer->GetLocation().y);
+			MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(tempB - tempA) + 3.0f);
+			SeePlayer = true;
+			return true;
+		}
+		else
+		{
+			SeePlayer = false;
+			return false;
+		}
+	}
+	
 };

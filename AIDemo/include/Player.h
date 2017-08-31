@@ -1,55 +1,31 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #pragma once
-#include "Window.h"
-#include <vector>
-#include "Texture.h"
-#include "PathfindingAStar.h"
+#include "Actor.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-/// \brief  player
-//----------------------------------------------------------------------------------------------------------------------
-class Player
+class Player : public Actor
 {
 public:
 	/// \brief Constr
 	Player();
 
+	Player(vec2 SpawnLocation, AStar* APathfinder, vec2* Mouse) : Actor(SpawnLocation), Pathfinder(APathfinder), MouseLocation(Mouse)
+	{
+		ActorTexture = new Texture("images/player.bmp");
+	}
+
 	/// \brief Destr
 	~Player();
 
-	/// \brief draw the player
-	/// \prama SDL_Renderer* renderer
-	void Draw(SDL_Renderer* r);
+	void Update(float dt) override;
 
-	/// \brief update the player
-	/// \prama float delta time
-	/// \prama vec2 new position to move to
-	void Update(float dt, vec2 newPosition);
+	inline const std::vector<vec2>& GetPath() { return Path; }
 
-	/// \brief create the texture
-	/// \prama SDL_Renderer* renderer
-	inline void CreateTexture(SDL_Renderer* r) { PlayerTexture->createTexture(r); }
-
-	/// \brief set current position
-	/// \prama vec2 position
-	inline void SetPosition(vec2 p) { Position = p; }
-
-	/// \brief get current position
-	/// \return vec2 position
-	inline vec2 GetPosition() { return Position; }
-
-	inline void SetPathTarget(vec2 p) { PathTarget = p; }
-
-	inline vec2 GetPathTarget() { return PathTarget; }
-
-	inline void SetAtPathEnd(bool b) { AtPathEnd = b; }
-
-	inline bool IsAtPathEnd() { return AtPathEnd; }
+	inline void RecomputePath() { NewPath = true; }
 
 private:
-	Texture* PlayerTexture = nullptr;
-	vec2 Position; ///< current position
-	vec2 PathTarget;
-	bool AtPathEnd = true;
+	std::vector<vec2> Path;
+	AStar* Pathfinder = nullptr;
+	vec2* MouseLocation = nullptr;
+	bool NewPath = false;
 };

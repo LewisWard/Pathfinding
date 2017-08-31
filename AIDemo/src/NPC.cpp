@@ -8,63 +8,78 @@ NPC::NPC()
 	srand(time(0));
 
 	// load texture
-	m_texture = new Texture("images/bot.bmp");
+	ActorTexture = new Texture("images/bot.bmp");
 
-	m_moving = false;
+	Moving = false;
+	MovementSpeed = 1.25f;
+	MoveAwayDirection = Location;
 }
 
-NPC::NPC(vec2 startPosition)
+NPC::NPC(vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
 {
 	// set seed
 	srand(time(0));
 
-	//set start position
-	m_position = startPosition;
-
-	// load texture
-	m_texture = new Texture("images/bot.bmp");
-
-	m_moving = false;
+	Moving = false;
+	Location = StartPosition;
+	ActorTexture = new Texture("images/bot.bmp");
+	MovementSpeed = 1.25f;
+	MoveAwayDirection = Location;
+	TargetLocation = Location;
+	Pathfinder = APathfinder;
+	APlayer = ThePlayer;
 }
 
 NPC::~NPC()
 {
-	delete m_texture;
+
 }
 
 void NPC::loadNewTexture(const char* texture)
 {
 	// delete old texture and load the new one
-	delete m_texture;
-	m_texture = new Texture(texture);
+	delete ActorTexture;
+	ActorTexture = new Texture(texture);
 }
 
-void NPC::draw(SDL_Renderer* r)
+void NPC::Update(float dt)
 {
-	SDL_Rect destRect;
-	destRect.w = 20;
-	destRect.h = 20;
-	destRect.x = m_position.x * 20;
-	destRect.y = m_position.y * 20;
-	SDL_RenderCopy(r, m_texture->texture(), NULL, &destRect);
+	// update player to move closer to the next waypoint
+	Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
+	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
+	ProcessLineOfSight();
+
+	// If the Bot is in LoS of the Player and is not moving, create a path to move away
+	if (SeePlayer && !Moving)
+	{
+		// Turn into a useable position for the pathfinder
+		vec2 ValidLocation((int)MoveAwayDirection.x, (int)MoveAwayDirection.y);
+	
+		Path = Pathfinder->FindPath(Location, ValidLocation);
+		Path.pop_back(); // This will be the current position the AI is in
+	}
+	
+	// Move away from the player
+	if (Path.size() > 0)
+	{
+		MoveTo(dt, Path);
+	}
+	else
+	{
+		isMoving(false);
+	}
+
 }
 
-void NPC::update(float dt, vec2 newPosition)
-{
-	m_moving = true;
-	// movement speed
-	float speed = 2.25f;
-	// move closer to the next waypoint
-	float xMove = (newPosition.x - m_position.x) * speed * dt;
-	float yMove = (newPosition.y - m_position.y) * speed * dt;
-	m_position.x += xMove;
-	m_position.y += yMove;
-}
-
-vec2 NPC::genMoveTo()
-{
-	m_moveToPosition.x = (rand() % 545) + 1;
-	m_moveToPosition.y = (rand() % 545) + 1;
-
-	return m_moveToPosition;
-}
+//void NPC::MoveTo(float& dt, std::vector<vec2>& Path)
+//{
+//	vec2 Node = Path.back();
+//
+//	Update(dt, Node);
+//
+//	if (withinRange(Location, Node))
+//	{
+//		Location = Node;
+//		Path.pop_back();
+//	}
+//}

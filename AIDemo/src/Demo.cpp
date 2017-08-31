@@ -44,6 +44,13 @@ Demo::Demo()
 	Pathfinder->AddCollision(vec2(13, 14));
 	Pathfinder->AddCollision(vec2(14, 14));
 
+
+	Pathfinder->AddCollision(vec2(9, 7));
+	Pathfinder->AddCollision(vec2(9, 8));
+	Pathfinder->AddCollision(vec2(9, 9));
+	Pathfinder->AddCollision(vec2(10, 10));
+	Pathfinder->AddCollision(vec2(8, 9));
+
 	Mouse = vec2(5, 5) * 20;
 	ThePlayer->CreateTexture(Renderer);
 }
@@ -84,10 +91,8 @@ void Demo::Update(float dt)
 
 	ThePlayer->Update(dt);
 
-	ProcessLoS();
-
 	BotOne->Update(dt);
-	//BotTwo->Update(dt);
+	BotTwo->Update(dt);
 }
 
 void Demo::Draw()
@@ -155,9 +160,9 @@ void Demo::Draw()
 	if (MoveDirectionVector)
 	{
 		SDL_RenderDrawLine(Renderer, (BotOne->GetLocation().x * 20) + 10, (BotOne->GetLocation().y * 20) + 10,
-											 (MoveAwayA.x * 20) + 10 , (MoveAwayA.y * 20) + 10);
+											 (BotOne->GetMoveAwayDirection().x * 20) + 10 , (BotOne->GetMoveAwayDirection().y * 20) + 10);
 		SDL_RenderDrawLine(Renderer, (BotTwo->GetLocation().x * 20) + 10, (BotTwo->GetLocation().y * 20) + 10,
-											(MoveAwayB.x * 20) + 10, (MoveAwayB.y * 20) + 10);
+											(BotTwo->GetMoveAwayDirection().x * 20) + 10, (BotTwo->GetMoveAwayDirection().y * 20) + 10);
 	}
 	for (int x = 0; x < 30 * 20; x += 20)
 	{
@@ -166,79 +171,4 @@ void Demo::Draw()
 	}
 
 	SDL_RenderPresent(Renderer);
-}
-
-void Demo::ProcessLoS()
-{
-	rayCast RaySight;
-
-	// Generate direction vectors between origin and target (i.e BotOne to Player)
-	vec2 DirectionToA(BotOne->GetLocation().x - ThePlayer->GetLocation().x, BotOne->GetLocation().y - ThePlayer->GetLocation().y);
-	PlayerInSightA = RaySight.cast(ThePlayer->GetLocation(), DirectionToA, length(BotOne->GetLocation() - ThePlayer->GetLocation()));
-	std::vector<vec2> PointsToA;
-	
-	// get all the grids that intersect the line of sight
-	PointsToA = RaySight.bresenhamLine(ThePlayer->GetLocation(), BotOne->GetLocation());
-	bool HitTarget = true;
-
-	for (int x = 0; x < PointsToA.size(); x++)
-	{
-		for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
-		{
-			if (Pathfinder->DetectCollision(PointsToA[x]))
-			{
-				PlayerInSightA = PointsToA[x];
-				HitTarget = false;
-				break;
-			}
-		}
-	}
-
-	// Is within line of sight and needs a new path to move away
-	if (HitTarget)
-	{
-		vec2 tempA(BotOne->GetLocation().x, BotOne->GetLocation().y);
-		vec2 tempB(ThePlayer->GetLocation().x, ThePlayer->GetLocation().y);
-		MoveAwayA = RaySight.cast(ThePlayer->GetLocation(), DirectionToA, length(tempB - tempA) + 3.0f);
-		BotOne->SetPlayerInSight(true);
-	}
-	else
-	{
-		BotOne->SetPlayerInSight(false);
-	}
-
-	// Player LoS to bBotTwo
-	vec2 DirectionToB(BotTwo->GetLocation().x - ThePlayer->GetLocation().x, BotTwo->GetLocation().y - ThePlayer->GetLocation().y);
-	PlayerInSightB = RaySight.cast(ThePlayer->GetLocation(), DirectionToB, length(BotTwo->GetLocation() - ThePlayer->GetLocation()));
-	std::vector<vec2> PointsToB;
-	
-	// Get all the grids that intersect the line of sight
-	PointsToB = RaySight.bresenhamLine(ThePlayer->GetLocation(), BotTwo->GetLocation());
-	HitTarget = true;
-
-	for (int x = 0; x < PointsToB.size(); x++)
-	{
-		for (int y = 0; y < Pathfinder->GetCollisions().size(); y++)
-		{
-			if (Pathfinder->DetectCollision(PointsToB[x]))
-			{
-				PlayerInSightB = PointsToB[x];
-				HitTarget = false;
-				break;
-			}
-		}
-	}
-
-	// Is within line of sight and needs a new path to move away
-	if (HitTarget)
-	{
-		vec2 tempA(BotTwo->GetLocation().x, BotTwo->GetLocation().y);
-		vec2 tempB(ThePlayer->GetLocation().x, ThePlayer->GetLocation().y);
-		MoveAwayB = RaySight.cast(ThePlayer->GetLocation(), DirectionToB, length(tempB - tempA) + 3.0f);
-		BotTwo->SetPlayerInSight(true);
-	}
-	else
-	{
-		BotTwo->SetPlayerInSight(false);
-	}
 }

@@ -22,12 +22,6 @@ public:
 	inline bool IsPlaying() { return GameLoop; }
 
 private:
-
-	void ProcessLoS();
-
-	std::vector<vec2> Path;
-	std::vector<vec2> PathB1;
-	std::vector<vec2> PathB2;
 	Window* DemoWindow = nullptr;
 	Texture* FloorTexture = nullptr;
 	Texture* WallTexture = nullptr;
@@ -39,8 +33,6 @@ private:
 	Player* ThePlayer;
 	Events* IOEvents;
 	vec2 Mouse;
-	vec2 PlayerInSightA, MoveAwayA;
-	vec2 PlayerInSightB, MoveAwayB;
 	bool GameLoop = true;
 	bool LineOfSight = true;
 	bool DrawPaths = true;

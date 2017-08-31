@@ -47,6 +47,7 @@ void NPC::Update(float dt)
 	// update player to move closer to the next waypoint
 	Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
 	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
+
 	ProcessLineOfSight();
 
 	// If the Bot is in LoS of the Player and is not moving, create a path to move away
@@ -70,16 +71,3 @@ void NPC::Update(float dt)
 	}
 
 }
-
-//void NPC::MoveTo(float& dt, std::vector<vec2>& Path)
-//{
-//	vec2 Node = Path.back();
-//
-//	Update(dt, Node);
-//
-//	if (withinRange(Location, Node))
-//	{
-//		Location = Node;
-//		Path.pop_back();
-//	}
-//}

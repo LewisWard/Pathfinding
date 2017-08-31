@@ -46,6 +46,8 @@ public:
 
 	inline vec2 GetPlayerSightRay() { return PlayerInSightRay; }
 
+	inline vec2 GetMoveAwayDirection() { return MoveAwayDirection; }
+
 private:
 	std::vector<vec2> Path;
 	AStar* Pathfinder = nullptr;

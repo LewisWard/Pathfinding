@@ -25,12 +25,11 @@ public:
 	/// \brief Destr
 	~rayCast();
 
-	/// \brief casts a ray from a origin in a direction
-	/// \prama vec2 position of the ray
+	/// \brief casts a ray from the origin in a direction
 	/// \prama vec2 direction of the ray
 	/// \prama vec2 length of the ray
 	/// \return vec2 the ray
-	vec2 cast(vec2 position, vec2 direction, float length);
+	vec2 Cast(vec2 direction, float length);
 
 	/// \brief computes the position the ray intersected
 	/// \prama Wall
@@ -39,11 +38,11 @@ public:
 
 	/// \brief sets the origin
 	/// \prama vec2 origin
-	inline void origin(vec2 o) { m_origin = o; }
+	inline void Origin(vec2 o) { m_origin = o; }
 
 	/// \brief gets the origin
 	/// \return vec2 origin
-	inline vec2 getOrigin() { return m_origin; }
+	inline vec2 SetOrigin() { return m_origin; }
 
 	/// \brief sets the direction
 	/// \prama vec2 direction
@@ -60,5 +59,5 @@ private:
 	/// \brief swap two vec2's around 
 	/// \prama vec2 a
 	/// \prama vec2 b
-	void swap(vec2& a, vec2& b);
+	void Swap(vec2& a, vec2& b);
 };

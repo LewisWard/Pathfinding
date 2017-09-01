@@ -30,6 +30,14 @@ inline vec2 operator + (vec2 a, float b)
 	return c;
 }
 
+inline vec2 operator - (vec2 a)
+{
+	vec2 c;
+	c.x = -a.x;
+	c.y = -a.y;
+	return c;
+
+}
 inline vec2 operator - (vec2 a, vec2 b)
 {
 	vec2 c;

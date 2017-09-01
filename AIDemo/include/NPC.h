@@ -44,8 +44,6 @@ public:
 
 	inline const std::vector<vec2>& GetPath() { return Path; }
 
-	inline vec2 GetPlayerSightRay() { return PlayerInSightRay; }
-
 	inline vec2 GetMoveAwayDirection() { return MoveAwayDirection; }
 
 private:
@@ -53,10 +51,8 @@ private:
 	AStar* Pathfinder = nullptr;
 	Player* APlayer = nullptr;
 	vec2 MoveAwayDirection;
-	vec2 PlayerInSightRay;
 	bool Moving; ///< is the NPC moving
 	bool SeePlayer = false;
-	bool CatchPlayer = false;
 
 	bool ProcessLineOfSight();
 	

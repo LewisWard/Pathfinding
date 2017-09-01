@@ -83,11 +83,9 @@ bool NPC::ProcessLineOfSight()
 
 	std::vector<Wall> RayHitWalls;
 	rayCast ARay(Location, normalize(PlayerLocation - SelfLocation));
-	RDir = ARay.GetDirection();
 
 	// Generate direction vectors between origin and target (i.e Bot to Player)
 	vec2 DirectionToPlayer(SelfLocation.x - PlayerLocation.x, SelfLocation.y - PlayerLocation.y);
-	PlayerInSightRay = RaySight.cast(PlayerLocation, DirectionToPlayer, length(SelfLocation - PlayerLocation));
 
 	bool HitTarget = false;
 
@@ -115,8 +113,7 @@ bool NPC::ProcessLineOfSight()
 		}
 	}
 
-	//bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), PlayerLocation, SelfLocation);
-	MoveAwayDirection = RaySight.cast(PlayerLocation, DirectionToPlayer, length(PlayerLocation - SelfLocation) + 1.0f);
+	MoveAwayDirection = ARay.Cast(DirectionToPlayer, 2.0f);
 	
 	// Is within line of sight and needs a new path to move away
 	SeePlayer = !HitTarget;

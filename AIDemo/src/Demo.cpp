@@ -166,7 +166,7 @@ void Demo::Draw()
 	BotTwo->Draw(Renderer);
 
 	SDL_RenderDrawLine(Renderer, (BotOne->GetLocation().x * 20) + 10, (BotOne->GetLocation().y * 20) + 10,
-		BotOne->RDir.x + (BotOne->GetLocation().x * 20) + 10, BotOne->RDir.y + (BotOne->GetLocation().y * 20) + 10);
+		(ThePlayer->GetLocation().x * 20) + 10, (ThePlayer->GetLocation().y * 20) + 10);
 	SDL_RenderDrawLine(Renderer, (BotTwo->GetLocation().x * 20) + 10, (BotTwo->GetLocation().y * 20) + 10,
 		(ThePlayer->GetLocation().x * 20) + 10, (ThePlayer->GetLocation().y * 20) + 10);
 

@@ -18,10 +18,8 @@ rayCast::~rayCast()
 
 }
 
-vec2 rayCast::cast(vec2 position, vec2 direction, float length)
+vec2 rayCast::Cast(vec2 direction, float length)
 {
-	m_direction = direction; 
-
 	// make sure the ray has a length
 	if (length == 0)
 	{
@@ -30,13 +28,13 @@ vec2 rayCast::cast(vec2 position, vec2 direction, float length)
 		return returnVector;
 	}
 
-	vec2 secondPoint = position + (normalize(m_direction) * length);
+	vec2 secondPoint = m_origin + (normalize(direction) * length);
 
 	//return points;
 	return secondPoint;
 }
 
-void rayCast::swap(vec2& a, vec2& b)
+void rayCast::Swap(vec2& a, vec2& b)
 {
 	vec2 c = a;
 	a = b;

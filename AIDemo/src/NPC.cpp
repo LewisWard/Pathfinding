@@ -77,12 +77,11 @@ void NPC::Update(float dt)
 
 bool NPC::ProcessLineOfSight()
 {
-	rayCast RaySight;
 	vec2 PlayerLocation = APlayer->GetLocation();
 	vec2 SelfLocation = Location;
 
 	std::vector<Wall> RayHitWalls;
-	rayCast ARay(Location, normalize(PlayerLocation - SelfLocation));
+	RayCast ARay(Location, normalize(PlayerLocation - SelfLocation));
 
 	// Generate direction vectors between origin and target (i.e Bot to Player)
 	vec2 DirectionToPlayer(SelfLocation.x - PlayerLocation.x, SelfLocation.y - PlayerLocation.y);

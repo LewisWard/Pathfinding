@@ -10,20 +10,20 @@
 //----------------------------------------------------------------------------------------------------------------------
 /// \brief  Casts a ray
 //----------------------------------------------------------------------------------------------------------------------
-class rayCast
+class RayCast
 {
 public:
 	/// \brief Constr
-	rayCast();
+	RayCast();
 
 	/// \brief Constr
 	/// \prama vec2 origin of the ray
-	rayCast(vec2 origin);
+	RayCast(vec2 origin);
 
-	rayCast(vec2 origin, vec2 direction) : m_origin(origin), m_direction(direction) {}
+	RayCast(vec2 origin, vec2 direction) : m_origin(origin), m_direction(direction) {}
 
 	/// \brief Destr
-	~rayCast();
+	~RayCast();
 
 	/// \brief casts a ray from the origin in a direction
 	/// \prama vec2 direction of the ray
@@ -55,9 +55,4 @@ public:
 private:
 	vec2 m_origin; ///< the rays origin
 	vec2 m_direction;
-
-	/// \brief swap two vec2's around 
-	/// \prama vec2 a
-	/// \prama vec2 b
-	void Swap(vec2& a, vec2& b);
 };

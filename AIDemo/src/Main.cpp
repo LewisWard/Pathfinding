@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
 
 	Demo* TheDemo = new Demo();
 
-	rayCast raySight;
 	float timer = 0.0f, botTimer = 0.0f, botBTimer = 0.0f;
 	bool LoS = false, drawPaths = true, drawGrids = true, moveDirectionVector = false;
 	

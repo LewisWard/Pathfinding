@@ -2,23 +2,23 @@
 // Date: 29/08/2017
 #include "Ray.h"
 
-rayCast::rayCast()
+RayCast::RayCast()
 {
 	m_origin.x = 0; 
 	m_origin.y = 0;
 }
 
-rayCast::rayCast(vec2 origin)
+RayCast::RayCast(vec2 origin)
 {
 	m_origin = origin;
 }
 
-rayCast::~rayCast()
+RayCast::~RayCast()
 {
 
 }
 
-vec2 rayCast::Cast(vec2 direction, float length)
+vec2 RayCast::Cast(vec2 direction, float length)
 {
 	// make sure the ray has a length
 	if (length == 0)
@@ -34,14 +34,7 @@ vec2 rayCast::Cast(vec2 direction, float length)
 	return secondPoint;
 }
 
-void rayCast::Swap(vec2& a, vec2& b)
-{
-	vec2 c = a;
-	a = b;
-	b = c;
-}
-
-bool rayCast::Intersect(Wall AWall)
+bool RayCast::Intersect(Wall AWall)
 {
 	float tmin = -INFINITY, tmax = INFINITY;
 

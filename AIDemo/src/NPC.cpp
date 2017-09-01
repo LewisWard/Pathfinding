@@ -41,8 +41,8 @@ void NPC::Update(float dt)
 	Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
 	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
 
-	bool R = ProcessLineOfSight();
-	std::cout << R << std::endl;
+	ProcessLineOfSight();
+	//std::cout << R << std::endl;
 
 	// If the Bot is in LoS of the Player and is not moving, create a path to move away
 	if (SeePlayer && !Moving)
@@ -81,21 +81,38 @@ bool NPC::ProcessLineOfSight()
 	vec2 PlayerLocation = APlayer->GetLocation();
 	vec2 SelfLocation = Location;
 
+	std::vector<Wall> RayHitWalls;
 	rayCast ARay(Location, normalize(PlayerLocation - SelfLocation));
-	
+	RDir = ARay.GetDirection();
+
 	// Generate direction vectors between origin and target (i.e Bot to Player)
 	vec2 DirectionToPlayer(SelfLocation.x - PlayerLocation.x, SelfLocation.y - PlayerLocation.y);
 	PlayerInSightRay = RaySight.cast(PlayerLocation, DirectionToPlayer, length(SelfLocation - PlayerLocation));
 
-	bool HitTarget = true;
+	bool HitTarget = false;
 
 	for (size_t i = 0; i < Pathfinder->GetCollisions().size(); i++)
 	{
-		Wall NewAll(Pathfinder->GetCollisions()[i], 0.5f);
-		HitTarget = ARay.Intersect(NewAll); //RaySight.Intersect(NewAll, PlayerLocation, SelfLocation);
+		Wall NewWall(Pathfinder->GetCollisions()[i], 0.5f);
+		HitTarget = ARay.Intersect(NewWall);
 
-		if (HitTarget == true)//false)
-			break;
+		// If a wall has been hit, add it to the array to check if it is in front of the player or not
+		if (HitTarget == true)
+		{
+			RayHitWalls.push_back(NewWall);
+		}
+	}
+
+	float DistanceToPlayer = length(PlayerLocation - SelfLocation);
+
+	for (size_t i = 0; i < RayHitWalls.size(); i++)
+	{
+		// If the distance between the NPC and Wall is shorter then the distance between the NPC and Player, then a wall is in the way
+		if (length(RayHitWalls[i].getCenter() - SelfLocation) < DistanceToPlayer)
+		{
+			HitTarget = true;
+			break; // Quick exit as there is at least 1 Wall between the NPC and Player
+		}
 	}
 
 	//bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), PlayerLocation, SelfLocation);
@@ -104,14 +121,4 @@ bool NPC::ProcessLineOfSight()
 	// Is within line of sight and needs a new path to move away
 	SeePlayer = !HitTarget;
 	return !HitTarget;
-	//if (HitTarget == false)
-	//{
-	//	SeePlayer = true;
-	//	return true;
-	//}
-	//else
-	//{
-	//	SeePlayer = false;
-	//	return false;
-	//}
 }

@@ -43,39 +43,6 @@ void rayCast::swap(vec2& a, vec2& b)
 	b = c;
 }
 
-bool rayCast::Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target)
-{
-	vec2 DirectionI = SafeDivideZero(1.0f, Target - Origin);
-
-	// Cycle all objects, check to see if target is in line of sight
-	for (size_t i = 0; i < Walls.size(); i++)
-	{
-		vec2 AWall = Walls[i];
-
-		vec2 LocationMin(AWall.x - 0.5f, AWall.y - 0.5f);
-		vec2 LocationMax(AWall.x + 0.5f, AWall.y + 0.5f);
-
-		float LocMinX = (LocationMin.x - Origin.x) * DirectionI.x;
-		float LocMaxX = (LocationMax.x - Origin.x) * DirectionI.x;
-		float LocMinY = (LocationMin.y - Origin.y) * DirectionI.y;
-		float LocMaxY = (LocationMax.y - Origin.y) * DirectionI.y;
-
-		if (LocMinX > LocMaxX)
-			std::swap(LocMinX, LocMaxX);
-
-		if (LocMinY > LocMaxY)
-			std::swap(LocMinY, LocMaxY);
-
-		// Did the ray miss the AABB around the location
-		if ((LocMinX > LocMaxY) || (LocMinY > LocMaxX))
-			continue;
-		else
-			return false;
-	}
-
-	return true;
-}
-
 bool rayCast::Intersect(Wall AWall)
 {
 	float tmin = -INFINITY, tmax = INFINITY;

@@ -33,12 +33,8 @@ public:
 	vec2 cast(vec2 position, vec2 direction, float length);
 
 	/// \brief computes the position the ray intersected
-	/// \prama std::vector<vec2> collsion locations
-	/// \prama vec2 origin
-	/// \prama vec2 destination
+	/// \prama Wall
 	/// \return bool, true if no objects are intersected between the origin and target
-	bool Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target);
-
 	bool Intersect(Wall AWall);
 
 	/// \brief sets the origin

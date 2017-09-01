@@ -25,15 +25,15 @@ Demo::Demo()
 	WallTexture->createTexture(Renderer);
 	TheWorld->createTexture(Renderer);
 	TheWorld->SetPathfinder(Pathfinder);
-	//TheWorld->LoadMap("Map.txt");
+	TheWorld->LoadMap("Map.txt");
 
 	Mouse = ThePlayer->GetLocation() * 20;
 	ThePlayer->CreateTexture(Renderer);
 
 
-	Pathfinder->AddCollision(vec2(6, 4));
-	Pathfinder->AddCollision(vec2(6, 5));
-	Pathfinder->AddCollision(vec2(6, 6));
+	//Pathfinder->AddCollision(vec2(6, 4));
+	//Pathfinder->AddCollision(vec2(6, 5));
+	//Pathfinder->AddCollision(vec2(6, 6));
 
 	//Pathfinder->AddCollision(vec2(2, 2));
 	//Pathfinder->AddCollision(vec2(2, 3));
@@ -100,7 +100,7 @@ void Demo::Update(float dt)
 
 	ThePlayer->Update(dt);
 	BotOne->Update(dt);
-	//BotTwo->Update(dt);
+	BotTwo->Update(dt);
 }
 
 void Demo::Draw()
@@ -166,7 +166,7 @@ void Demo::Draw()
 	BotTwo->Draw(Renderer);
 
 	SDL_RenderDrawLine(Renderer, (BotOne->GetLocation().x * 20) + 10, (BotOne->GetLocation().y * 20) + 10,
-		(ThePlayer->GetLocation().x * 20) + 10, (ThePlayer->GetLocation().y * 20) + 10);
+		BotOne->RDir.x + (BotOne->GetLocation().x * 20) + 10, BotOne->RDir.y + (BotOne->GetLocation().y * 20) + 10);
 	SDL_RenderDrawLine(Renderer, (BotTwo->GetLocation().x * 20) + 10, (BotTwo->GetLocation().y * 20) + 10,
 		(ThePlayer->GetLocation().x * 20) + 10, (ThePlayer->GetLocation().y * 20) + 10);
 

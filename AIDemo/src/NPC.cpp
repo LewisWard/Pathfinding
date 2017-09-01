@@ -42,7 +42,6 @@ void NPC::Update(float dt)
 	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
 
 	ProcessLineOfSight();
-	//std::cout << R << std::endl;
 
 	// If the Bot is in LoS of the Player and is not moving, create a path to move away
 	if (SeePlayer && !Moving)
@@ -68,10 +67,11 @@ void NPC::Update(float dt)
 	if (Path.size() > 0)
 	{
 		MoveTo(dt, Path);
+		Moving = true;
 	}
 	else
 	{
-		isMoving(false);
+		Moving = false;
 	}
 }
 

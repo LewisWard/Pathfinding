@@ -56,4 +56,6 @@ private:
 
 	bool ProcessLineOfSight();
 	
+	void FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange, float EndRange);
+
 };

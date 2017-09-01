@@ -100,7 +100,7 @@ void Demo::Update(float dt)
 
 	ThePlayer->Update(dt);
 	BotOne->Update(dt);
-	BotTwo->Update(dt);
+	//BotTwo->Update(dt);
 }
 
 void Demo::Draw()

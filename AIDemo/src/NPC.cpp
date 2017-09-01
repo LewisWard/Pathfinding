@@ -59,6 +59,13 @@ void NPC::Update(float dt)
 		else
 			ValidLocation.y = (int)MoveAwayDirection.y;
 	
+
+		// Make sure the location stays within the world bounds
+		if (ValidLocation.x > Pathfinder->GetWorldSize().x - 1)
+			ValidLocation.x = Pathfinder->GetWorldSize().x - 1;
+		if (ValidLocation.y > Pathfinder->GetWorldSize().y - 1)
+			ValidLocation.y = Pathfinder->GetWorldSize().y - 1;
+
 		Path = Pathfinder->FindPath(Location, ValidLocation);
 		Path.pop_back(); // This will be the current position the AI is in
 	}
@@ -112,9 +119,61 @@ bool NPC::ProcessLineOfSight()
 		}
 	}
 
-	MoveAwayDirection = ARay.Cast(DirectionToPlayer, 2.0f);
+	float Range = 2.0f;
+	MoveAwayDirection = ARay.Cast(DirectionToPlayer, Range);
+	FindValidLocation(ARay, DirectionToPlayer, Range, 5.0f);
+
 	
 	// Is within line of sight and needs a new path to move away
 	SeePlayer = !HitTarget;
 	return !HitTarget;
+}
+
+void NPC::FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange, float EndRange)
+{
+	float Start = StartRange;
+
+	// Check that the selected MoveAwayDirection location is valid to move to, otherwise, try to find another valid location to move to
+	if (Pathfinder->DetectCollision(MoveAwayDirection))
+	{
+		// Increase the search range
+		while (Start < EndRange)
+		{
+			Start++;
+			MoveAwayDirection = Ray.Cast(SearchDirection, Start);
+
+			// If a valid location is found, quick exit
+			if (Pathfinder->DetectCollision(MoveAwayDirection))
+			{
+				// If we are still selecting an invalid location, NPC is selecting a location off of the world
+				// So select the first valid location to the left/right/up/down direction 
+				vec2 MoveTop(0.f, -1.0f);
+				vec2 MoveRight(1.f, 0.0f);
+				vec2 MoveBottom(0.f, 1.0f);
+				vec2 MoveLeft(1.f, 0.0f);
+
+				MoveAwayDirection = Ray.Cast(MoveTop, StartRange);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+					break;
+
+				MoveAwayDirection = Ray.Cast(MoveRight, StartRange);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+					break;
+
+				MoveAwayDirection = Ray.Cast(MoveBottom, StartRange);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+					break;
+
+				MoveAwayDirection = Ray.Cast(MoveLeft, StartRange);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+					break;
+
+			}
+			else
+			{
+				// Is a valid location
+				break;
+			}
+		}
+	}
 }

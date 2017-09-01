@@ -38,6 +38,7 @@ public:
 	AStar();
 
 	inline void SetWorldSize(int X, int Y) { WorldSize.x = X; WorldSize.y = Y; }
+	inline vec2 GetWorldSize() { return WorldSize; }
 	inline void ClearCollisions() { Walls.clear(); }
 	inline std::vector<vec2> GetCollisions() { return Walls; }
 	inline void AddCollision(vec2 Corrdinates) { Walls.push_back(Corrdinates); }

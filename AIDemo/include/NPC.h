@@ -56,6 +56,7 @@ private:
 	vec2 PlayerInSightRay;
 	bool Moving; ///< is the NPC moving
 	bool SeePlayer = false;
+	bool CatchPlayer = false;
 
 	bool ProcessLineOfSight();
 	

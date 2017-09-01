@@ -11,7 +11,6 @@ World::World(int WorldMaxPosX, int WorldMaxPosY)
 	WorldWidth = WorldMaxPosX * 25;
 	WorldHeight = WorldMaxPosY * 25;
 	m_texture = new Texture("images/floor.bmp");
-	Pathfinder = new AStar();
 
 	// set seed
 	srand(time(0));

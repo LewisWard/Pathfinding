@@ -9,7 +9,7 @@
 class Wall
 {
 public:
-	Wall(vec2 GridCenter, int GridExtents);
+	Wall(vec2 GridCenter, float GridExtents);
 
 	/// \brief Destr
 	~Wall();
@@ -26,7 +26,7 @@ public:
 	inline vec2 getCenter() { return m_center; }
 
 private:
-	AABB m_wall; ///< the wall
+	AABB m_wall;
 	vec2 m_center;
 
 public:

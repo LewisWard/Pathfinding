@@ -9,7 +9,7 @@ Demo::Demo()
 	Renderer = SDL_CreateRenderer(DemoWindow->window(), -1, 0);
 	TheWorld = new World(30, 30);
 	Pathfinder = new AStar();
-	ThePlayer = new Player(vec2(5, 3), Pathfinder, &Mouse);
+	ThePlayer = new Player(vec2(5, 5), Pathfinder, &Mouse);
 	IOEvents = new Events();
 	BotOne = new NPC(vec2(8, 5), Pathfinder, ThePlayer);
 	BotTwo = new NPC(vec2(5, 19), Pathfinder, ThePlayer);
@@ -30,29 +30,41 @@ Demo::Demo()
 	Mouse = ThePlayer->GetLocation() * 20;
 	ThePlayer->CreateTexture(Renderer);
 
-	Pathfinder->AddCollision(vec2(2, 2));
-	Pathfinder->AddCollision(vec2(2, 3));
-	Pathfinder->AddCollision(vec2(2, 4));
-	Pathfinder->AddCollision(vec2(2, 5));
-	Pathfinder->AddCollision(vec2(5, 10));
-	Pathfinder->AddCollision(vec2(6, 10));
-	Pathfinder->AddCollision(vec2(6, 11));
-	Pathfinder->AddCollision(vec2(6, 12));
-	Pathfinder->AddCollision(vec2(7, 12));
-	Pathfinder->AddCollision(vec2(7, 13));
-	Pathfinder->AddCollision(vec2(6, 12));
-	Pathfinder->AddCollision(vec2(5, 10));
-	Pathfinder->AddCollision(vec2(5, 9));
-	Pathfinder->AddCollision(vec2(4, 10));
-	Pathfinder->AddCollision(vec2(3, 10));
-	Pathfinder->AddCollision(vec2(13, 13));
-	Pathfinder->AddCollision(vec2(13, 14));
-	Pathfinder->AddCollision(vec2(14, 14));
-	Pathfinder->AddCollision(vec2(7, 4));
-	Pathfinder->AddCollision(vec2(7, 5));
-	Pathfinder->AddCollision(vec2(7, 6));
-	Pathfinder->AddCollision(vec2(10, 10));
-	Pathfinder->AddCollision(vec2(8, 9));
+
+	Pathfinder->AddCollision(vec2(6, 4));
+	Pathfinder->AddCollision(vec2(6, 5));
+	Pathfinder->AddCollision(vec2(6, 6));
+
+	//Pathfinder->AddCollision(vec2(2, 2));
+	//Pathfinder->AddCollision(vec2(2, 3));
+	//Pathfinder->AddCollision(vec2(2, 4));
+	//Pathfinder->AddCollision(vec2(2, 5));
+	//Pathfinder->AddCollision(vec2(2, 7));
+	//Pathfinder->AddCollision(vec2(5, 10));
+	//Pathfinder->AddCollision(vec2(6, 10));
+	//Pathfinder->AddCollision(vec2(6, 11));
+	//Pathfinder->AddCollision(vec2(6, 12));
+	//Pathfinder->AddCollision(vec2(7, 12));
+	//Pathfinder->AddCollision(vec2(7, 13));
+	//Pathfinder->AddCollision(vec2(6, 12));
+	//Pathfinder->AddCollision(vec2(5, 10));
+	//Pathfinder->AddCollision(vec2(5, 9));
+	//Pathfinder->AddCollision(vec2(4, 10));
+	//Pathfinder->AddCollision(vec2(3, 10));
+	//Pathfinder->AddCollision(vec2(13, 13));
+	//Pathfinder->AddCollision(vec2(13, 14));
+	//Pathfinder->AddCollision(vec2(14, 14));
+	//Pathfinder->AddCollision(vec2(7, 4));
+	//Pathfinder->AddCollision(vec2(7, 5));
+	//Pathfinder->AddCollision(vec2(7, 6));
+	//Pathfinder->AddCollision(vec2(10, 10));
+	//Pathfinder->AddCollision(vec2(8, 9));
+
+	//Wall ATestWall(vec2(10, 10), 1);
+	//rayCast ARay(vec2(12, 10), vec2(-1, 0));
+	//bool R = ARay.NIntersect(ATestWall);
+	//std::cout << R << std::endl;
+
 }
 
 Demo::~Demo()

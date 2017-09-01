@@ -41,18 +41,29 @@ void NPC::Update(float dt)
 	Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
 	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
 
-	ProcessLineOfSight();
+	bool R = ProcessLineOfSight();
+	std::cout << R << std::endl;
 
 	// If the Bot is in LoS of the Player and is not moving, create a path to move away
 	if (SeePlayer && !Moving)
 	{
-		// Turn into a useable position for the pathfinder
-		vec2 ValidLocation((int)MoveAwayDirection.x, (int)MoveAwayDirection.y);
+		vec2 ValidLocation;
+
+		// Turn into a useable position for the pathfinder, handles rounding 
+		if (APlayer->GetLocation().x < Location.x)
+			ValidLocation.x = (int)MoveAwayDirection.x + 1;
+		else
+			ValidLocation.x = (int)MoveAwayDirection.x;
+
+		if (APlayer->GetLocation().y < Location.y)
+			ValidLocation.y = (int)MoveAwayDirection.y + 1;
+		else
+			ValidLocation.y = (int)MoveAwayDirection.y;
 	
 		Path = Pathfinder->FindPath(Location, ValidLocation);
 		Path.pop_back(); // This will be the current position the AI is in
 	}
-	
+
 	// Move away from the player
 	if (Path.size() > 0)
 	{
@@ -67,31 +78,40 @@ void NPC::Update(float dt)
 bool NPC::ProcessLineOfSight()
 {
 	rayCast RaySight;
+	vec2 PlayerLocation = APlayer->GetLocation();
+	vec2 SelfLocation = Location;
 
+	rayCast ARay(Location, normalize(PlayerLocation - SelfLocation));
+	
 	// Generate direction vectors between origin and target (i.e Bot to Player)
-	vec2 DirectionToPlayer(Location.x - APlayer->GetLocation().x, Location.y - APlayer->GetLocation().y);
-	PlayerInSightRay = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(Location - APlayer->GetLocation()));
+	vec2 DirectionToPlayer(SelfLocation.x - PlayerLocation.x, SelfLocation.y - PlayerLocation.y);
+	PlayerInSightRay = RaySight.cast(PlayerLocation, DirectionToPlayer, length(SelfLocation - PlayerLocation));
 
-	bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), APlayer->GetLocation(), Location);
+	bool HitTarget = true;
 
-	float Range = 2.0f;
-	MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(APlayer->GetLocation() - Location) + Range);
-
-	while (Pathfinder->DetectCollision(MoveAwayDirection) && Range < 8.0f)
+	for (size_t i = 0; i < Pathfinder->GetCollisions().size(); i++)
 	{
-		Range++;
-		MoveAwayDirection = RaySight.cast(APlayer->GetLocation(), DirectionToPlayer, length(APlayer->GetLocation() - Location) + Range);
+		Wall NewAll(Pathfinder->GetCollisions()[i], 0.5f);
+		HitTarget = ARay.Intersect(NewAll); //RaySight.Intersect(NewAll, PlayerLocation, SelfLocation);
+
+		if (HitTarget == true)//false)
+			break;
 	}
+
+	//bool HitTarget = RaySight.Intersect(Pathfinder->GetCollisions(), PlayerLocation, SelfLocation);
+	MoveAwayDirection = RaySight.cast(PlayerLocation, DirectionToPlayer, length(PlayerLocation - SelfLocation) + 1.0f);
 	
 	// Is within line of sight and needs a new path to move away
-	if (HitTarget)
-	{
-		SeePlayer = true;
-		return true;
-	}
-	else
-	{
-		SeePlayer = false;
-		return false;
-	}
+	SeePlayer = !HitTarget;
+	return !HitTarget;
+	//if (HitTarget == false)
+	//{
+	//	SeePlayer = true;
+	//	return true;
+	//}
+	//else
+	//{
+	//	SeePlayer = false;
+	//	return false;
+	//}
 }

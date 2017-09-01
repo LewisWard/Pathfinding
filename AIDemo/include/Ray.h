@@ -5,6 +5,7 @@
 #include "World.h"
 #include "Wall.h"
 #include <vector>
+#include <algorithm>
 
 //----------------------------------------------------------------------------------------------------------------------
 /// \brief  Casts a ray
@@ -18,6 +19,8 @@ public:
 	/// \brief Constr
 	/// \prama vec2 origin of the ray
 	rayCast(vec2 origin);
+
+	rayCast(vec2 origin, vec2 direction) : m_origin(origin), m_direction(direction) {}
 
 	/// \brief Destr
 	~rayCast();
@@ -35,6 +38,8 @@ public:
 	/// \prama vec2 destination
 	/// \return bool, true if no objects are intersected between the origin and target
 	bool Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target);
+
+	bool Intersect(Wall AWall);
 
 	/// \brief sets the origin
 	/// \prama vec2 origin

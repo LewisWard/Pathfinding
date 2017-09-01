@@ -6,7 +6,7 @@
 struct AABB
 {
 	AABB() : m_min(0, 0), m_max(1.0f, 1.0f) {};
-	AABB(vec2 min, vec2 max) : m_min(min), m_max(max) {};
+	AABB(vec2 min, vec2 max) : m_min(min), m_max(max), m_extents((max - min) / 2.0f) {};
 
 	/// \brief check if point has intersected the AABB
 	/// \prama vec2 point
@@ -32,10 +32,16 @@ struct AABB
 		return false;
 	}
 
-	vec2 m_min; ///< min 
-	vec2 m_max; ///< max
+	vec2 m_min;
+	vec2 m_max;
+	vec2 m_extents;
 
-	inline bool operator == (const AABB& b) { return (m_min == b.m_min && m_max == b.m_max); }
+	inline bool operator == (const AABB& b) 
+	{ 
+		return (m_min == b.m_min && 
+					  m_max == b.m_max && 
+						m_extents == b.m_extents); 
+	}
 };
 
 

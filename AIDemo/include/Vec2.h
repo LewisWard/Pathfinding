@@ -22,11 +22,27 @@ inline vec2 operator + (vec2 a, vec2 b)
 	return c;
 }
 
+inline vec2 operator + (vec2 a, float b)
+{
+	vec2 c;
+	c.x = a.x + b;
+	c.y = a.y + b;
+	return c;
+}
+
 inline vec2 operator - (vec2 a, vec2 b)
 {
 	vec2 c;
 	c.x = a.x - b.x;
 	c.y = a.y - b.y;
+	return c;
+}
+
+inline vec2 operator - (vec2 a, float b)
+{
+	vec2 c;
+	c.x = a.x - b;
+	c.y = a.y - b;
 	return c;
 }
 
@@ -54,6 +70,7 @@ inline vec2 operator / (float b, vec2 a)
 	return c;
 }
 
+// Zero's become 1 and the division is performed
 inline vec2 SafeDivide(float a, vec2 b)
 {
 	if (b.x == 0)
@@ -63,6 +80,24 @@ inline vec2 SafeDivide(float a, vec2 b)
 		b.y = 1;
 
 	return a / b;
+}
+
+// Keeps zero in vector, but doesn't divide that element if zero
+inline vec2 SafeDivideZero(float a, vec2 b)
+{
+	vec2 c;
+
+	if (b.x != 0)
+		c.x = a / b.x;
+	else
+		c.x = 0.f;
+
+	if (b.y != 0)
+		c.y = a / b.y;
+	else
+		c.y = 0.f;
+
+	return c;
 }
 
 inline float dot(vec2 a, vec2 b)

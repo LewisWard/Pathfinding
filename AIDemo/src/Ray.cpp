@@ -1,7 +1,6 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #include "Ray.h"
-#include <algorithm>
 
 rayCast::rayCast()
 {
@@ -46,7 +45,7 @@ void rayCast::swap(vec2& a, vec2& b)
 
 bool rayCast::Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target)
 {
-	vec2 DirectionI = SafeDivide(1.0f, Target - Origin);
+	vec2 DirectionI = SafeDivideZero(1.0f, Target - Origin);
 
 	// Cycle all objects, check to see if target is in line of sight
 	for (size_t i = 0; i < Walls.size(); i++)
@@ -75,4 +74,25 @@ bool rayCast::Intersect(std::vector<vec2>& Walls, vec2 Origin, vec2 Target)
 	}
 
 	return true;
+}
+
+bool rayCast::Intersect(Wall AWall)
+{
+	float tmin = -INFINITY, tmax = INFINITY;
+
+	vec2 Invert(1.f / m_direction);
+
+	float tx1 = (AWall.getGrid().m_min.x - m_origin.x) * Invert.x;
+	float tx2 = (AWall.getGrid().m_max.x - m_origin.x) * Invert.x;
+
+	tmin = std::max(tmin, std::min(tx1, tx2));
+	tmax = std::min(tmax, std::max(tx1, tx2));
+
+	float ty1 = (AWall.getGrid().m_min.y - m_origin.y) * Invert.y;
+	float ty2 = (AWall.getGrid().m_max.y - m_origin.y) * Invert.y;
+
+	tmin = std::max(tmin, std::min(ty1, ty2));
+	tmax = std::min(tmax, std::max(ty1, ty2));
+
+	return (tmax >= 0) && (tmax >= tmin);
 }

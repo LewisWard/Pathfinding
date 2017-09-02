@@ -9,30 +9,30 @@
 class Wall
 {
 public:
-	Wall(vec2 GridCenter, float GridExtents);
+	Wall(Vec2 GridCenter, float GridExtents);
 
 	/// \brief Destr
 	~Wall();
 
 	/// \brief tests to see if a collision took place
-	/// \prama vec2 position of character
+	/// \prama Vec2 position of character
 	/// \return bool 
-	bool collision(vec2 position);
+	bool Collision(Vec2 Position);
 
 	/// \brief get the index of the grid the wall is in
 	/// \return AABB grid index 
-	inline AABB getGrid() { return m_wall;}
+	inline AABB GetGrid() { return WallBounds;}
 
-	inline vec2 getCenter() { return m_center; }
+	inline Vec2 GetCenter() { return Center; }
 
 private:
-	AABB m_wall;
-	vec2 m_center;
+	AABB WallBounds;
+	Vec2 Center;
 
 public:
 
 	inline bool operator == (const Wall& b)
 	{
-		return (m_wall == b.m_wall && m_center == b.m_center);
+		return (WallBounds == b.WallBounds && Center == b.Center);
 	}
 };

@@ -8,16 +8,16 @@ AStar::AStar()
 	Directions = { { 0, 1 },{ 1, 0 },{ 0, -1 },{ -1, 0 } };
 }
 
-void AStar::RemoveCollision(vec2 Coordinates)
+void AStar::RemoveCollision(Vec2 Coordinates)
 {
-	std::vector<vec2>::iterator it = std::find(Walls.begin(), Walls.end(), Coordinates);
+	std::vector<Vec2>::iterator it = std::find(Walls.begin(), Walls.end(), Coordinates);
 	if (it != Walls.end())
 	{
 		Walls.erase(it);
 	}
 }
 
-AStarNode* AStar::FindNodeOnList(std::vector<AStarNode*>& Nodes, vec2 Coordinates)
+AStarNode* AStar::FindNodeOnList(std::vector<AStarNode*>& Nodes, Vec2 Coordinates)
 {
 	for (AStarNode* Node : Nodes)
 	{
@@ -37,23 +37,23 @@ void AStar::ReleaseNodes(std::vector<AStarNode*>& Nodes)
 	}
 }
 
-bool AStar::DetectCollision(vec2 Coordinates)
+bool AStar::DetectCollision(Vec2 Coordinates)
 {
-	if (Coordinates.x < 0 || Coordinates.x >= WorldSize.x || Coordinates.y < 0 || Coordinates.y >= WorldSize.y
+	if (Coordinates.X < 0 || Coordinates.X >= WorldSize.X || Coordinates.Y < 0 || Coordinates.Y >= WorldSize.Y
 		|| std::find(Walls.begin(), Walls.end(), Coordinates) != Walls.end())
 		return true;
 
 	return false;
 }
 
-std::vector<vec2> AStar::FindPath(vec2 Start, vec2 Target)
+std::vector<Vec2> AStar::FindPath(Vec2 Start, Vec2 Target)
 {
-	Start.x = (int)Start.x;
-	Start.y = (int)Start.y;
-	Target.x = (int)Target.x;
-	Target.y = (int)Target.y;
+	Start.X = (int)Start.X;
+	Start.Y = (int)Start.Y;
+	Target.X = (int)Target.X;
+	Target.Y = (int)Target.Y;
 
-	std::vector<vec2> Path;
+	std::vector<Vec2> Path;
 
 	// Quick exit if invalid target location, returns a path of the starting location
 	if (DetectCollision(Target))
@@ -90,7 +90,7 @@ std::vector<vec2> AStar::FindPath(vec2 Start, vec2 Target)
 		// For each of the nodes around this node, if valid/not on the closed list compute it's total cost
 		for (int i = 0; i < DirectionsCount; i++)
 		{
-			vec2 NewCoord(Current->Coordinate + Directions[i]);
+			Vec2 NewCoord(Current->Coordinate + Directions[i]);
 
 			if (DetectCollision(NewCoord) || FindNodeOnList(CloseSet, NewCoord))
 			{
@@ -105,7 +105,7 @@ std::vector<vec2> AStar::FindPath(vec2 Start, vec2 Target)
 			{
 				Succesor = new AStarNode(NewCoord, Current);
 				Succesor->G = TotalNodeCost;
-				Succesor->H = fabs(Succesor->Coordinate.x + Target.x) + fabs(Succesor->Coordinate.y + Target.y);
+				Succesor->H = fabs(Succesor->Coordinate.X + Target.X) + fabs(Succesor->Coordinate.Y + Target.Y);
 				OpenSet.push_back(Succesor);
 			}
 			else if (Succesor && TotalNodeCost < Succesor->G)

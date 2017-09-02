@@ -2,142 +2,112 @@
 // Date: 29/08/2017
 #pragma once
 
-struct vec2
+struct Vec2
 {
-	float x;
-	float y;
+	float X;
+	float Y;
 
-	vec2() : x(0), y(0){};
-	vec2(float x, float y) : x(x), y(y){};
+	Vec2() : X(0.0f), Y(0.0f){};
+	Vec2(float LocX, float LocY) : X(LocX), Y(LocY){};
 
-	bool operator == (const vec2& b) { return (x == b.x && y == b.y); }
-	void operator = (const vec2& b) { x = b.x; y = b.y; }
+	bool operator == (const Vec2& B) { return (X == B.X && Y == B.Y); }
+	void operator = (const Vec2& B) { X = B.X; Y = B.Y; }
 };
 
-inline vec2 operator + (vec2 a, vec2 b)
+inline Vec2 operator + (Vec2 A, Vec2 B)
 {
-	vec2 c; 
-	c.x = a.x + b.x;
-	c.y = a.y + b.y;
-	return c;
+	Vec2 R; 
+	R.X = A.X + B.X;
+	R.Y = A.Y + B.Y;
+	return R;
 }
 
-inline vec2 operator + (vec2 a, float b)
+inline Vec2 operator + (Vec2 V, float F)
 {
-	vec2 c;
-	c.x = a.x + b;
-	c.y = a.y + b;
-	return c;
+	Vec2 R;
+	R.X = V.X + F;
+	R.Y = V.Y + F;
+	return R;
 }
 
-inline vec2 operator - (vec2 a)
+inline Vec2 operator - (Vec2 V)
 {
-	vec2 c;
-	c.x = -a.x;
-	c.y = -a.y;
-	return c;
+	Vec2 R;
+	R.X = -V.X;
+	R.Y = -V.Y;
+	return R;
 
 }
-inline vec2 operator - (vec2 a, vec2 b)
+inline Vec2 operator - (Vec2 A, Vec2 B)
 {
-	vec2 c;
-	c.x = a.x - b.x;
-	c.y = a.y - b.y;
-	return c;
+	Vec2 R;
+	R.X = A.X - B.X;
+	R.Y = A.Y - B.Y;
+	return R;
 }
 
-inline vec2 operator - (vec2 a, float b)
+inline Vec2 operator - (Vec2 V, float F)
 {
-	vec2 c;
-	c.x = a.x - b;
-	c.y = a.y - b;
-	return c;
+	Vec2 R;
+	R.X = V.X - F;
+	R.Y = V.Y - F;
+	return R;
 }
 
-inline vec2 operator * (vec2 a, float b)
+inline Vec2 operator * (Vec2 V, float F)
 {
-	vec2 c;
-	c.x = a.x * b;
-	c.y = a.y * b;
-	return c;
+	Vec2 R;
+	R.X = V.X * F;
+	R.Y = V.Y * F;
+	return R;
 }
 
-inline vec2 operator / (vec2 a, float b)
+inline Vec2 operator / (Vec2 V, float F)
 {
-	vec2 c;
-	c.x = a.x / b;
-	c.y = a.y / b;
-	return c;
+	Vec2 R;
+	R.X = V.X / F;
+	R.Y = V.Y / F;
+	return R;
 }
 
-inline vec2 operator / (float b, vec2 a)
+inline Vec2 operator / (float F, Vec2 V)
 {
-	vec2 c;
-	c.x = b / a.x;
-	c.y = b / a.y;
-	return c;
+	Vec2 R;
+	R.X = F / V.X;
+	R.Y = F / V.Y;
+	return R;
 }
 
-// Zero's become 1 and the division is performed
-inline vec2 SafeDivide(float a, vec2 b)
+inline float Dot(Vec2 A, Vec2 B)
 {
-	if (b.x == 0)
-		b.x = 1;
-
-	if (b.y == 0)
-		b.y = 1;
-
-	return a / b;
+	return (A.X * B.X) + (A.Y * B.Y);
 }
 
-// Keeps zero in vector, but doesn't divide that element if zero
-inline vec2 SafeDivideZero(float a, vec2 b)
+inline float Length(Vec2 V)
 {
-	vec2 c;
-
-	if (b.x != 0)
-		c.x = a / b.x;
-	else
-		c.x = 0.f;
-
-	if (b.y != 0)
-		c.y = a / b.y;
-	else
-		c.y = 0.f;
-
-	return c;
+	return std::sqrt((V.X * V.X) + (V.Y * V.Y));
 }
 
-inline float dot(vec2 a, vec2 b)
+inline Vec2 Normalize(Vec2 V)
 {
-	return (a.x * b.x) + (a.y * b.y);
-}
+	float Len = Length(V);
 
-inline float length(vec2 a)
-{
-	return std::sqrt((a.x * a.x) + (a.y * a.y));
-}
-
-inline vec2 normalize(vec2 a)
-{
-
-	float len = length(a);
-
-	if (len > 000000.1f)
+	if (Len > 000000.1f)
 	{
-		len = 1.0f / len;
+		Len = 1.0f / Len;
 	}
 	else
 	{
-		len = 0.0f;
+		Len = 0.0f;
 	}
 
-	return vec2(len * a.x, len * a.y);
+	return Vec2(Len * V.X, Len * V.Y);
 }
 
-inline bool withinRange(vec2 a, vec2 b)
+inline bool WithinRange(Vec2 A, Vec2 B)
 {
-	if (a.x >= b.x - 000000.1f && a.x <= b.x + 000000.1f && a.y >= b.y - 000000.1f && a.y <= b.y + 000000.1f)
+	float Tolerance = 000000.1f;
+	if (A.X >= B.X - Tolerance && A.X <= B.X + Tolerance && A.Y >= B.Y - Tolerance && A.Y <= B.Y + Tolerance)
 		return true;
 	else
 		return false;

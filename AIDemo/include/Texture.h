@@ -11,26 +11,24 @@ class Texture
 public:
 	/// \brief Constr
 	/// \prama char* file name of texture
-	Texture(const char* filename);
+	Texture(const char* Filename);
 
 	/// \brief Destr
 	~Texture();
 
 	/// \brief create the texture
 	/// \prama SDL_Renderer* renderer
-	void createTexture(SDL_Renderer* renderer);
+	void CreateTexture(SDL_Renderer* Renderer);
 
 	/// \brief get the surface
 	/// \return SDL_Surface* surface
-	inline SDL_Surface* surface()
-	{ return m_surface; }
+	inline SDL_Surface* GetSurface() { return Surface; }
 
 	/// \brief get the texture
 	/// \return SDL_Texture* texture
-	inline SDL_Texture* texture()
-	{ return m_texture; }
+	inline SDL_Texture* GetTexture() { return TheTexture; }
 
 private:
-	SDL_Surface* m_surface = nullptr; ///< surface
-	SDL_Texture* m_texture = nullptr; ///< texture
+	SDL_Surface* Surface = nullptr;
+	SDL_Texture* TheTexture = nullptr; 
 };

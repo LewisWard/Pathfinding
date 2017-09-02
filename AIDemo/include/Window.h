@@ -25,25 +25,22 @@ public:
 
 	/// \brief get the SDL_Window pointer for this window
 	/// \return SDL_Window*
-	inline SDL_Window* window()
-	{ return m_win; }
+	inline SDL_Window* GetWindow() { return TheWindow; }
 
 	/// \brief get the width of the window
 	/// \return int
-	inline int width()
-	{ return m_width; }
+	inline int GetWidth() { return Width; }
 
 	/// \brief get the height of the window
 	/// \return int
-	inline int height()
-	{ return m_height; }
+	inline int GetHeight() { return Height; }
 
 private:
-	SDL_Window* m_win; ///< SDL Window
-	int m_xPos; ///< X position
-	int m_yPos; ///< Y position
-	int m_width; ///< window width
-	int m_height; ///< window height
+	SDL_Window* TheWindow; ///< SDL Window
+	int XPos; ///< X position
+	int YPos; ///< Y position
+	int Width; ///< window width
+	int Height; ///< window height
 };
 
 class Events
@@ -57,15 +54,15 @@ public:
 
 	/// \brief update the event queue (i.e which key has been pressed)
 	/// \return int event
-	int eventQueue();
+	int EventQueue();
 
 	/// \brief update the mouse event queue
 	/// \return int event
-	int mouseQueue();
+	int MouseQueue();
 
-	vec2& getMouseLocation() { return m_mouseLocation; };
+	Vec2& GetMouseLocation() { return MouseLocation; };
 
 private: 
-	SDL_Event m_SDLEvent; ///< SDL event
-	vec2 m_mouseLocation;
+	SDL_Event SDLEvent;
+	Vec2 MouseLocation;
 };

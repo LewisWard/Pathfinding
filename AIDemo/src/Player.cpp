@@ -17,8 +17,8 @@ Player::~Player()
 void Player::Update(float dt)
 {
 	// update player to move closer to the next waypoint
-	Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
-	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
+	Location.X += (TargetLocation.X - Location.X) * MovementSpeed * dt;
+	Location.Y += (TargetLocation.Y - Location.Y) * MovementSpeed * dt;
 
 	if (IsAtPathEnd() || NewPath)
 	{

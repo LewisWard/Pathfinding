@@ -14,25 +14,23 @@ public:
 	NPC();
 
 	/// \brief Constr
-	NPC(vec2 StartPosition, AStar* APathfinder, Player* ThePlayer);
+	NPC(Vec2 StartPosition, AStar* APathfinder, Player* ThePlayer);
 
 	/// \brief Destr
 	~NPC();
 
 	/// \brief update the NPC
 	/// \prama float delta time
-	/// \prama vec2 new position to move to
+	/// \prama Vec2 new position to move to
 	void Update(float dt) override;
-
-	//void MoveTo(float& dt, std::vector<vec2>& Path) override;
 
 	/// \brief load a new texture
 	/// \prama char* texture file name
-	void loadNewTexture(const char* texture);
+	void LoadNewTexture(const char* texture);
 
 	/// \brief set is the NPC is moving or not
 	/// \prama bool
-	inline void isMoving(bool M) { Moving = M; }
+	inline void IsMoving(bool M) { Moving = M; }
 
 	/// \brief get is the NPC is moving or not
 	/// \prama bool
@@ -42,20 +40,20 @@ public:
 
 	inline bool IsPlayerInSight() { return SeePlayer; }
 
-	inline const std::vector<vec2>& GetPath() { return Path; }
+	inline const std::vector<Vec2>& GetPath() { return Path; }
 
-	inline vec2 GetMoveAwayDirection() { return MoveAwayDirection; }
+	inline Vec2 GetMoveAwayDirection() { return MoveAwayDirection; }
 
 private:
-	std::vector<vec2> Path;
+	std::vector<Vec2> Path;
 	AStar* Pathfinder = nullptr;
 	Player* APlayer = nullptr;
-	vec2 MoveAwayDirection;
+	Vec2 MoveAwayDirection;
 	bool Moving; ///< is the NPC moving
 	bool SeePlayer = false;
 
 	bool ProcessLineOfSight();
 	
-	void FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange, float EndRange);
+	void FindValidLocation(Ray& ARay, Vec2 SearchDirection, float StartRange, float EndRange);
 
 };

@@ -11,7 +11,7 @@ NPC::NPC()
 	MoveAwayDirection = Location;
 }
 
-NPC::NPC(vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
+NPC::NPC(Vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
 {
 	Moving = false;
 	Location = StartPosition;
@@ -28,7 +28,7 @@ NPC::~NPC()
 
 }
 
-void NPC::loadNewTexture(const char* texture)
+void NPC::LoadNewTexture(const char* texture)
 {
 	// delete old texture and load the new one
 	delete ActorTexture;
@@ -38,33 +38,33 @@ void NPC::loadNewTexture(const char* texture)
 void NPC::Update(float dt)
 {
 	// update player to move closer to the next waypoint
-	Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
-	Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
+	Location.X += (TargetLocation.X - Location.X) * MovementSpeed * dt;
+	Location.Y += (TargetLocation.Y - Location.Y) * MovementSpeed * dt;
 
 	ProcessLineOfSight();
 
 	// If the Bot is in LoS of the Player and is not moving, create a path to move away
 	if (SeePlayer && !Moving)
 	{
-		vec2 ValidLocation;
+		Vec2 ValidLocation;
 
 		// Turn into a useable position for the pathfinder, handles rounding 
-		if (APlayer->GetLocation().x < Location.x)
-			ValidLocation.x = (int)MoveAwayDirection.x + 1;
+		if (APlayer->GetLocation().X < Location.X)
+			ValidLocation.X = (int)MoveAwayDirection.X + 1;
 		else
-			ValidLocation.x = (int)MoveAwayDirection.x;
+			ValidLocation.X = (int)MoveAwayDirection.X;
 
-		if (APlayer->GetLocation().y < Location.y)
-			ValidLocation.y = (int)MoveAwayDirection.y + 1;
+		if (APlayer->GetLocation().Y < Location.Y)
+			ValidLocation.Y = (int)MoveAwayDirection.Y + 1;
 		else
-			ValidLocation.y = (int)MoveAwayDirection.y;
+			ValidLocation.Y = (int)MoveAwayDirection.Y;
 	
 
 		// Make sure the location stays within the world bounds
-		if (ValidLocation.x > Pathfinder->GetWorldSize().x - 1)
-			ValidLocation.x = Pathfinder->GetWorldSize().x - 1;
-		if (ValidLocation.y > Pathfinder->GetWorldSize().y - 1)
-			ValidLocation.y = Pathfinder->GetWorldSize().y - 1;
+		if (ValidLocation.X > Pathfinder->GetWorldSize().X - 1)
+			ValidLocation.X = Pathfinder->GetWorldSize().X - 1;
+		if (ValidLocation.Y > Pathfinder->GetWorldSize().Y - 1)
+			ValidLocation.Y = Pathfinder->GetWorldSize().Y - 1;
 
 		Path = Pathfinder->FindPath(Location, ValidLocation);
 		Path.pop_back(); // This will be the current position the AI is in
@@ -84,14 +84,14 @@ void NPC::Update(float dt)
 
 bool NPC::ProcessLineOfSight()
 {
-	vec2 PlayerLocation = APlayer->GetLocation();
-	vec2 SelfLocation = Location;
+	Vec2 PlayerLocation = APlayer->GetLocation();
+	Vec2 SelfLocation = Location;
 
 	std::vector<Wall> RayHitWalls;
-	RayCast ARay(Location, normalize(PlayerLocation - SelfLocation));
+	Ray ARay(Location, Normalize(PlayerLocation - SelfLocation));
 
 	// Generate direction vectors between origin and target (i.e Bot to Player)
-	vec2 DirectionToPlayer(SelfLocation.x - PlayerLocation.x, SelfLocation.y - PlayerLocation.y);
+	Vec2 DirectionToPlayer(SelfLocation.X - PlayerLocation.X, SelfLocation.Y - PlayerLocation.Y);
 
 	bool HitTarget = false;
 
@@ -107,12 +107,12 @@ bool NPC::ProcessLineOfSight()
 		}
 	}
 
-	float DistanceToPlayer = length(PlayerLocation - SelfLocation);
+	float DistanceToPlayer = Length(PlayerLocation - SelfLocation);
 
 	for (size_t i = 0; i < RayHitWalls.size(); i++)
 	{
 		// If the distance between the NPC and Wall is shorter then the distance between the NPC and Player, then a wall is in the way
-		if (length(RayHitWalls[i].getCenter() - SelfLocation) < DistanceToPlayer)
+		if (Length(RayHitWalls[i].GetCenter() - SelfLocation) < DistanceToPlayer)
 		{
 			HitTarget = true;
 			break; // Quick exit as there is at least 1 Wall between the NPC and Player
@@ -129,7 +129,7 @@ bool NPC::ProcessLineOfSight()
 	return !HitTarget;
 }
 
-void NPC::FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange, float EndRange)
+void NPC::FindValidLocation(Ray& ARay, Vec2 SearchDirection, float StartRange, float EndRange)
 {
 	float Start = StartRange;
 
@@ -140,7 +140,7 @@ void NPC::FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange
 		while (Start < EndRange)
 		{
 			Start++;
-			MoveAwayDirection = Ray.Cast(SearchDirection, Start);
+			MoveAwayDirection = ARay.Cast(SearchDirection, Start);
 
 			// If a valid location is found, quick exit
 			if (Pathfinder->DetectCollision(MoveAwayDirection))
@@ -148,34 +148,34 @@ void NPC::FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange
 				// If we are still selecting an invalid location, NPC is selecting a location off of the world
 				// So select the first valid location to the left/right/up/down direction. A direction that is valid must
 				// also be a direction that takes teh NPC away from the player
-				vec2 MoveTop(0.f, -1.0f);
-				vec2 MoveRight(1.f, 0.0f);
-				vec2 MoveBottom(0.f, 1.0f);
-				vec2 MoveLeft(-1.f, 0.0f);
+				Vec2 MoveTop(0.f, -1.0f);
+				Vec2 MoveRight(1.f, 0.0f);
+				Vec2 MoveBottom(0.f, 1.0f);
+				Vec2 MoveLeft(-1.f, 0.0f);
 
-				vec2 PlayerLocation = APlayer->GetLocation();
+				Vec2 PlayerLocation = APlayer->GetLocation();
 
-				MoveAwayDirection = Ray.Cast(MoveTop, StartRange);
-				float L1 = length(MoveAwayDirection - PlayerLocation);
-				float L2 = length(Location - PlayerLocation);
+				MoveAwayDirection = ARay.Cast(MoveTop, StartRange);
+				float L1 = Length(MoveAwayDirection - PlayerLocation);
+				float L2 = Length(Location - PlayerLocation);
 				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
-				MoveAwayDirection = Ray.Cast(MoveRight, StartRange);
-				L1 = length(MoveAwayDirection - PlayerLocation);
-				L2 = length(Location - PlayerLocation);
+				MoveAwayDirection = ARay.Cast(MoveRight, StartRange);
+				L1 = Length(MoveAwayDirection - PlayerLocation);
+				L2 = Length(Location - PlayerLocation);
 				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
-				MoveAwayDirection = Ray.Cast(MoveBottom, StartRange);
-				L1 = length(MoveAwayDirection - PlayerLocation);
-				L2 = length(Location - PlayerLocation);
+				MoveAwayDirection = ARay.Cast(MoveBottom, StartRange);
+				L1 = Length(MoveAwayDirection - PlayerLocation);
+				L2 = Length(Location - PlayerLocation);
 				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
-				MoveAwayDirection = Ray.Cast(MoveLeft, StartRange);
-				L1 = length(MoveAwayDirection - PlayerLocation);
-				L2 = length(Location - PlayerLocation);
+				MoveAwayDirection = ARay.Cast(MoveLeft, StartRange);
+				L1 = Length(MoveAwayDirection - PlayerLocation);
+				L2 = Length(Location - PlayerLocation);
 				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 

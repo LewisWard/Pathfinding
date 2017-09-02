@@ -2,55 +2,55 @@
 // Date: 29/08/2017
 #include "Ray.h"
 
-RayCast::RayCast()
+Ray::Ray()
 {
-	m_origin.x = 0; 
-	m_origin.y = 0;
+	Origin.X = 0; 
+	Origin.Y = 0;
 }
 
-RayCast::RayCast(vec2 origin)
+Ray::Ray(Vec2 RayOrigin)
 {
-	m_origin = origin;
+	Origin = RayOrigin;
 }
 
-RayCast::~RayCast()
+Ray::~Ray()
 {
 
 }
 
-vec2 RayCast::Cast(vec2 direction, float length)
+Vec2 Ray::Cast(Vec2 Direction, float Length)
 {
-	// make sure the ray has a length
-	if (length == 0)
+	// Make sure the ray has a length
+	if (Length == 0)
 	{
-		vec2 returnVector(0.0f, 0.0f);
 		// cannot do anything to exit method
-		return returnVector;
+		Vec2 ReturnVector(0.0f, 0.0f);
+		return ReturnVector;
 	}
 
-	vec2 secondPoint = m_origin + (normalize(direction) * length);
-
-	//return points;
-	return secondPoint;
+	// Return the new location of where the ray ends
+	Vec2 SecondPoint = Origin + (Normalize(Direction) * Length);	
+	return SecondPoint;
 }
 
-bool RayCast::Intersect(Wall AWall)
+bool Ray::Intersect(Wall AWall)
 {
-	float tmin = -INFINITY, tmax = INFINITY;
+	// Method is based upon the fast, branchless method here: https://tavianator.com/fast-branchless-raybounding-box-intersections/
+	float LineMin = -INFINITY, LineMax = INFINITY;
 
-	vec2 Invert(1.f / m_direction);
+	Vec2 Invert(1.f / Direction);
 
-	float tx1 = (AWall.getGrid().m_min.x - m_origin.x) * Invert.x;
-	float tx2 = (AWall.getGrid().m_max.x - m_origin.x) * Invert.x;
+	float Point1X = (AWall.GetGrid().Min.X - Origin.X) * Invert.X;
+	float Point2X = (AWall.GetGrid().Max.X - Origin.X) * Invert.X;
 
-	tmin = std::max(tmin, std::min(tx1, tx2));
-	tmax = std::min(tmax, std::max(tx1, tx2));
+	LineMin = std::max(LineMin, std::min(Point1X, Point2X));
+	LineMax = std::min(LineMax, std::max(Point1X, Point2X));
 
-	float ty1 = (AWall.getGrid().m_min.y - m_origin.y) * Invert.y;
-	float ty2 = (AWall.getGrid().m_max.y - m_origin.y) * Invert.y;
+	float Point1Y = (AWall.GetGrid().Min.Y - Origin.Y) * Invert.Y;
+	float Point2Y = (AWall.GetGrid().Max.Y - Origin.Y) * Invert.Y;
 
-	tmin = std::max(tmin, std::min(ty1, ty2));
-	tmax = std::min(tmax, std::max(ty1, ty2));
+	LineMin = std::max(LineMin, std::min(Point1Y, Point2Y));
+	LineMax = std::min(LineMax, std::max(Point1Y, Point2Y));
 
-	return (tmax >= 0) && (tmax >= tmin);
+	return (LineMax >= 0) && (LineMax >= LineMin);
 }

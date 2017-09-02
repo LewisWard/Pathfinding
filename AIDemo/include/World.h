@@ -29,17 +29,17 @@ public:
 
 	/// \brief create the texture
 	/// \prama SDL_Renderer* renderer
-	inline void createTexture(SDL_Renderer* r) { m_texture->createTexture(r); }
+	inline void CreateTexture(SDL_Renderer* r) { m_texture->CreateTexture(r); }
 
-	inline vec2 GetWorldMax() { return WorldMax; }
+	inline Vec2 GetWorldMax() { return WorldMax; }
 
 	void LoadMap(const char* Filename);
 
 	inline void  SetPathfinder(AStar* APathfinder) { Pathfinder = APathfinder; }
 
 private:
-	vec2 WorldMin;
-	vec2 WorldMax;
+	Vec2 WorldMin;
+	Vec2 WorldMax;
 	int WorldWidth;
 	int WorldHeight;
 	Texture* m_texture = nullptr;

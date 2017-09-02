@@ -7,29 +7,26 @@
 #include <vector>
 #include <algorithm>
 
-//----------------------------------------------------------------------------------------------------------------------
-/// \brief  Casts a ray
-//----------------------------------------------------------------------------------------------------------------------
-class RayCast
+class Ray
 {
 public:
 	/// \brief Constr
-	RayCast();
+	Ray();
 
 	/// \brief Constr
-	/// \prama vec2 origin of the ray
-	RayCast(vec2 origin);
+	/// \prama Vec2 origin of the ray
+	Ray(Vec2 Origin);
 
-	RayCast(vec2 origin, vec2 direction) : m_origin(origin), m_direction(direction) {}
+	Ray(Vec2 Origin, Vec2 Direction) : Origin(Origin), Direction(Direction) {}
 
 	/// \brief Destr
-	~RayCast();
+	~Ray();
 
 	/// \brief casts a ray from the origin in a direction
-	/// \prama vec2 direction of the ray
-	/// \prama vec2 length of the ray
-	/// \return vec2 the ray
-	vec2 Cast(vec2 direction, float length);
+	/// \prama Vec2 direction of the ray
+	/// \prama Vec2 length of the ray
+	/// \return Vec2 the ray
+	Vec2 Cast(Vec2 direction, float length);
 
 	/// \brief computes the position the ray intersected
 	/// \prama Wall
@@ -37,22 +34,22 @@ public:
 	bool Intersect(Wall AWall);
 
 	/// \brief sets the origin
-	/// \prama vec2 origin
-	inline void Origin(vec2 o) { m_origin = o; }
+	/// \prama Vec2 origin
+	inline void GetOrigin(Vec2 o) { Origin = o; }
 
 	/// \brief gets the origin
-	/// \return vec2 origin
-	inline vec2 SetOrigin() { return m_origin; }
+	/// \return Vec2 origin
+	inline Vec2 SetOrigin() { return Origin; }
 
 	/// \brief sets the direction
-	/// \prama vec2 direction
-	inline void SetDirection(vec2 o) { m_direction = o; }
+	/// \prama Vec2 direction
+	inline void SetDirection(Vec2 o) { Direction = o; }
 
 	/// \brief gets the direction
-	/// \return vec2 direction
-	inline vec2 GetDirection() { return m_direction; }
+	/// \return Vec2 direction
+	inline Vec2 GetDirection() { return Direction; }
 
 private:
-	vec2 m_origin; ///< the rays origin
-	vec2 m_direction;
+	Vec2 Origin;
+	Vec2 Direction;
 };

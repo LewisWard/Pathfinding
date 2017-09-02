@@ -2,17 +2,10 @@
 // Date: 29/08/2017
 #include "Wall.h"
 
-Wall::Wall(vec2 GridCenter, float GridExtents)
+Wall::Wall(Vec2 GridCenter, float GridExtents)
 {
-	//m_wall.m_min.x = GridCenter.x - GridExtents;
-	//m_wall.m_min.y = GridCenter.y - GridExtents;
-	//m_wall.m_max.x = GridCenter.x + GridExtents;
-	//m_wall.m_max.y = GridCenter.y + GridExtents;
-
-	m_wall = AABB(GridCenter - (float)GridExtents, GridCenter + (float)GridExtents);
-
-	m_center.x = GridCenter.x;
-	m_center.y = GridCenter.y;
+	WallBounds = AABB(GridCenter - (float)GridExtents, GridCenter + (float)GridExtents);
+	Center = GridCenter;
 }
 
 Wall::~Wall()
@@ -20,7 +13,7 @@ Wall::~Wall()
 
 }
 
-bool Wall::collision(vec2 position)
+bool Wall::Collision(Vec2 Position)
 {
-	return m_wall.intersection(position);
+	return WallBounds.intersection(Position);
 }

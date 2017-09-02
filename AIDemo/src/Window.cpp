@@ -43,19 +43,19 @@ Window::Window()
 	initTimerDT();
 
 	// set window X and Y positions and defalut screen position
-	m_xPos = 0;
-	m_yPos = 30;
-	m_width = 600;
-	m_height = 600;
+	XPos = 0;
+	YPos = 30;
+	Width = 600;
+	Height = 600;
 
 	// create SDL window
-	m_win = SDL_CreateWindow("Lewis Ward's AI", m_xPos, m_yPos, m_width, m_height, SDL_WINDOW_SHOWN);
+	TheWindow = SDL_CreateWindow("Lewis Ward's AI", XPos, YPos, Width, Height, SDL_WINDOW_SHOWN);
 }
 
 Window::~Window()
 {
 	// destory windown
-	SDL_DestroyWindow(m_win);
+	SDL_DestroyWindow(TheWindow);
 }
 
 
@@ -69,11 +69,11 @@ Events::~Events()
 
 }
 
-int Events::eventQueue()
+int Events::EventQueue()
 {
-	while (SDL_PollEvent(&m_SDLEvent))
+	while (SDL_PollEvent(&SDLEvent))
 	{
-		switch (m_SDLEvent.type)
+		switch (SDLEvent.type)
 		{
 			// user clicked on the close button
 		case SDL_QUIT:
@@ -81,15 +81,15 @@ int Events::eventQueue()
 			break;
 			// user has pressed the 'Esc' W/A/S/D key
 		case SDL_KEYDOWN:
-			if (SDLK_ESCAPE == m_SDLEvent.key.keysym.sym)
+			if (SDLK_ESCAPE == SDLEvent.key.keysym.sym)
 				return 100;
-			if (SDLK_w == m_SDLEvent.key.keysym.sym)
+			if (SDLK_w == SDLEvent.key.keysym.sym)
 				return 1;
-			if (SDLK_a == m_SDLEvent.key.keysym.sym)
+			if (SDLK_a == SDLEvent.key.keysym.sym)
 				return 2;
-			if (SDLK_s == m_SDLEvent.key.keysym.sym)
+			if (SDLK_s == SDLEvent.key.keysym.sym)
 				return 3;
-			if (SDLK_d == m_SDLEvent.key.keysym.sym)
+			if (SDLK_d == SDLEvent.key.keysym.sym)
 				return 4;
 			break;
 		default: return -1; break; // no event
@@ -97,25 +97,25 @@ int Events::eventQueue()
 	}
 }
 
-int Events::mouseQueue()
+int Events::MouseQueue()
 {
-		switch (m_SDLEvent.type)
+		switch (SDLEvent.type)
 		{
 		// mouse button pressed
 		case SDL_MOUSEBUTTONDOWN:
-			if (SDL_BUTTON_LEFT == m_SDLEvent.button.button)
+			if (SDL_BUTTON_LEFT == SDLEvent.button.button)
 				return 0;
-			if (SDL_BUTTON_MIDDLE == m_SDLEvent.button.button)
+			if (SDL_BUTTON_MIDDLE == SDLEvent.button.button)
 				return 1;
-			if (SDL_BUTTON_RIGHT == m_SDLEvent.button.button)
+			if (SDL_BUTTON_RIGHT == SDLEvent.button.button)
 				return 2;
 			break;
 		// mouse moved
 		case SDL_MOUSEMOTION:
 			{
 				// update mouse position
-				m_mouseLocation.x = m_SDLEvent.motion.x;
-				m_mouseLocation.y = m_SDLEvent.motion.y;
+				MouseLocation.X = SDLEvent.motion.x;
+				MouseLocation.Y = SDLEvent.motion.y;
 			}
 			break;
 			default: return -1; break; // no event

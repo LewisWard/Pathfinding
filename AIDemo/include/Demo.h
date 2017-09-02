@@ -32,7 +32,7 @@ private:
 	AStar* Pathfinder = nullptr;
 	Player* ThePlayer;
 	Events* IOEvents;
-	vec2 Mouse;
+	Vec2 Mouse;
 	bool GameLoop = true;
 	bool DrawPaths = true;
 };

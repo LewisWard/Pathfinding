@@ -6,14 +6,14 @@
 
 World::World(int WorldMaxPosX, int WorldMaxPosY)
 {
-	WorldMin = vec2(0.f, 0.f);
-	WorldMax = vec2(WorldMaxPosX * 25, WorldMaxPosY * 25);
+	WorldMin = Vec2(0.f, 0.f);
+	WorldMax = Vec2((float)(WorldMaxPosX * 25), (float)(WorldMaxPosY * 25));
 	WorldWidth = WorldMaxPosX * 25;
 	WorldHeight = WorldMaxPosY * 25;
 	m_texture = new Texture("images/floor.bmp");
 
 	// set seed
-	srand(time(0));
+	srand((unsigned int)(time(0)));
 }
 
 World::~World()
@@ -34,7 +34,7 @@ void World::draw(SDL_Renderer* r)
 		{
 			destRect.x = x * 25;
 			destRect.y = y * 25;
-			SDL_RenderCopy(r, m_texture->texture(), NULL, &destRect);
+			SDL_RenderCopy(r, m_texture->GetTexture(), NULL, &destRect);
 		}
 	}
 }
@@ -60,7 +60,7 @@ void World::LoadMap(const char* Filename)
 				// Find type of position				
 				if (FileLine[i] == 'w')
 				{
-					Pathfinder->AddCollision(vec2(i, LineIndex));
+					Pathfinder->AddCollision(Vec2((float)i, (float)LineIndex));
 				}
 			}
 

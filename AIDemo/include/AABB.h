@@ -5,42 +5,42 @@
 
 struct AABB
 {
-	AABB() : m_min(0, 0), m_max(1.0f, 1.0f) {};
-	AABB(vec2 min, vec2 max) : m_min(min), m_max(max), m_extents((max - min) / 2.0f) {};
+	AABB() : Min(0, 0), Max(1.0f, 1.0f) {};
+	AABB(Vec2 MinPoint, Vec2 MaxPoint) : Min(MinPoint), Max(MaxPoint), Extents((MaxPoint - MinPoint) / 2.0f) {};
 
-	/// \brief check if point has intersected the AABB
-	/// \prama vec2 point
+	/// \brief Check if point has intersected the AABB
+	/// \prama Vec2 point
 	/// \bool true if intersected
-	bool intersection(vec2 point)
+	inline bool intersection(Vec2 Point)
 	{
-		if (point.x >= m_min.x && point.y >= m_min.y && point.x <= m_max.x && point.y <= m_max.y)
+		if (Point.X >= Min.X && Point.Y >= Min.Y && Point.X <= Max.X && Point.Y <= Max.Y)
 		{
 			return true;
 		}
 		return false;
 	}
 
-	/// \brief check if a AABB has intersected the AABB
+	/// \brief Check if a AABB has intersected the AABB
 	/// \prama AABB
 	/// \bool true if intersected
-	bool intersection(AABB aabb)
+	inline bool intersection(AABB Box)
 	{
-		if (aabb.m_min.x >= m_min.x && aabb.m_min.y >= m_min.y && aabb.m_max.x <= m_max.x && aabb.m_max.y <= m_max.y)
+		if (Box.Min.X >= Min.X && Box.Min.Y >= Min.Y && Box.Max.X <= Max.X && Box.Max.Y <= Max.Y)
 		{
 			return true;
 		}
 		return false;
 	}
 
-	vec2 m_min;
-	vec2 m_max;
-	vec2 m_extents;
+	Vec2 Min;
+	Vec2 Max;
+	Vec2 Extents;
 
 	inline bool operator == (const AABB& b) 
 	{ 
-		return (m_min == b.m_min && 
-					  m_max == b.m_max && 
-						m_extents == b.m_extents); 
+		return (Min == b.Min && 
+					  Max == b.Max && 
+						Extents == b.Extents); 
 	}
 };
 

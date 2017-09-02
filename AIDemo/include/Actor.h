@@ -12,56 +12,31 @@ class Actor
 public:
 	Actor() {} 
 
-	Actor(vec2 SpawnLocation) : Location(SpawnLocation), TargetLocation(SpawnLocation) { }
+	Actor(Vec2 SpawnLocation) : Location(SpawnLocation), TargetLocation(SpawnLocation) { }
 
-	virtual ~Actor() 
-	{ 
-		if (ActorTexture)
-			delete ActorTexture;
-	}
+	virtual ~Actor();
 
-	void Draw(SDL_Renderer* r)
-	{
-		SDL_Rect destRect;
-		destRect.w = 20;
-		destRect.h = 20;
-		destRect.x = Location.x * 20;
-		destRect.y = Location.y * 20;
-		SDL_RenderCopy(r, ActorTexture->texture(), NULL, &destRect);
-	}
+	void Draw(SDL_Renderer* Renderer);
 
-	virtual void Update(float dt)
-	{
-		Location.x += (TargetLocation.x - Location.x) * MovementSpeed * dt;
-		Location.y += (TargetLocation.y - Location.y) * MovementSpeed * dt;
-	}
+	virtual void Update(float dt);
 
-	virtual void MoveTo(float& dt, std::vector<vec2>& Path)
-	{
-		TargetLocation = Path.back();
-
-		if (withinRange(Location, TargetLocation))
-		{
-			Location = TargetLocation;
-			Path.pop_back();
-		}
-	}
+	virtual void MoveTo(float& dt, std::vector<Vec2>& Path);
 
 	/// \brief create the texture
 	/// \prama SDL_Renderer* renderer
-	inline void CreateTexture(SDL_Renderer* r) { ActorTexture->createTexture(r); }
+	inline void CreateTexture(SDL_Renderer* r) { ActorTexture->CreateTexture(r); }
 
 	/// \brief set current position
-	/// \prama vec2 position
-	inline void SetLocation(vec2 NewLocation) { Location = NewLocation; }
+	/// \prama Vec2 position
+	inline void SetLocation(Vec2 NewLocation) { Location = NewLocation; }
 
 	/// \brief get current position
-	/// \return vec2 position
-	inline vec2 GetLocation() { return Location; }
+	/// \return Vec2 position
+	inline Vec2 GetLocation() { return Location; }
 
-	inline void SetPathTarget(vec2 p) { TargetLocation = p; }
+	inline void SetPathTarget(Vec2 p) { TargetLocation = p; }
 
-	inline vec2 GetPathTarget() { return TargetLocation; }
+	inline Vec2 GetPathTarget() { return TargetLocation; }
 
 	inline void SetAtPathEnd(bool b) { AtPathEnd = b; }
 
@@ -69,8 +44,8 @@ public:
 
 protected:
 	Texture* ActorTexture = nullptr;
-	vec2 Location;
-	vec2 TargetLocation;
+	Vec2 Location;
+	Vec2 TargetLocation;
 	float MovementSpeed = 5.f;
 	bool AtPathEnd = true;
 };

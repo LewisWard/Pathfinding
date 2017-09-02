@@ -9,19 +9,19 @@
 struct AStarNode
 {
 	AStarNode* Parent;
-	vec2 Coordinate;
+	Vec2 Coordinate;
 	int G = 0, H = 0;
 
-	AStarNode(vec2 coord)
+	AStarNode(Vec2 Coord)
 	{
-		Coordinate = coord;
+		Coordinate = Coord;
 		Parent = nullptr;
 	};
 
-	AStarNode(vec2 coord, AStarNode* successor)
+	AStarNode(Vec2 Coord, AStarNode* Successor)
 	{
-		Parent = successor;
-		Coordinate = coord;
+		Parent = Successor;
+		Coordinate = Coord;
 	};
 
 	int GetScore()
@@ -37,24 +37,24 @@ public:
 	
 	AStar();
 
-	inline void SetWorldSize(int X, int Y) { WorldSize.x = X; WorldSize.y = Y; }
-	inline vec2 GetWorldSize() { return WorldSize; }
+	inline void SetWorldSize(float X, float Y) { WorldSize.X = X; WorldSize.Y = Y; }
+	inline Vec2 GetWorldSize() { return WorldSize; }
 	inline void ClearCollisions() { Walls.clear(); }
-	inline std::vector<vec2> GetCollisions() { return Walls; }
-	inline void AddCollision(vec2 Corrdinates) { Walls.push_back(Corrdinates); }
+	inline std::vector<Vec2> GetCollisions() { return Walls; }
+	inline void AddCollision(Vec2 Corrdinates) { Walls.push_back(Corrdinates); }
 
-	void RemoveCollision(vec2 Coordinates);
+	void RemoveCollision(Vec2 Coordinates);
 
-	AStarNode* FindNodeOnList(std::vector<AStarNode*>& Nodes, vec2 Coordinates);
+	AStarNode* FindNodeOnList(std::vector<AStarNode*>& Nodes, Vec2 Coordinates);
 
 	void ReleaseNodes(std::vector<AStarNode*>& Nodes);
 
-	bool DetectCollision(vec2 Coordinates);
+	bool DetectCollision(Vec2 Coordinates);
 
-	std::vector<vec2> FindPath(vec2 Start, vec2 Target);
+	std::vector<Vec2> FindPath(Vec2 Start, Vec2 Target);
 
 private:
-	std::vector<vec2> Directions, Walls;
-	vec2 WorldSize;
+	std::vector<Vec2> Directions, Walls;
+	Vec2 WorldSize;
 	int DirectionsCount = 4;
 };

@@ -9,7 +9,7 @@ public:
 	/// \brief Constr
 	Player();
 
-	Player(vec2 SpawnLocation, AStar* APathfinder, vec2* Mouse) : Actor(SpawnLocation), Pathfinder(APathfinder), MouseLocation(Mouse)
+	Player(Vec2 SpawnLocation, AStar* APathfinder, Vec2* Mouse) : Actor(SpawnLocation), Pathfinder(APathfinder), MouseLocation(Mouse)
 	{
 		ActorTexture = new Texture("images/player.bmp");
 	}
@@ -19,13 +19,13 @@ public:
 
 	void Update(float dt) override;
 
-	inline const std::vector<vec2>& GetPath() { return Path; }
+	inline const std::vector<Vec2>& GetPath() { return Path; }
 
 	inline void RecomputePath() { NewPath = true; }
 
 private:
-	std::vector<vec2> Path;
+	std::vector<Vec2> Path;
 	AStar* Pathfinder = nullptr;
-	vec2* MouseLocation = nullptr;
+	Vec2* MouseLocation = nullptr;
 	bool NewPath = false;
 };

@@ -7,7 +7,7 @@ NPC::NPC()
 	ActorTexture = new Texture("images/bot.bmp");
 
 	Moving = false;
-	MovementSpeed = 3.5f;
+	MovementSpeed = 9.5f;
 	MoveAwayDirection = Location;
 }
 
@@ -16,7 +16,7 @@ NPC::NPC(vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
 	Moving = false;
 	Location = StartPosition;
 	ActorTexture = new Texture("images/bot.bmp");
-	MovementSpeed = 3.25f;
+	MovementSpeed = 9.5f;
 	MoveAwayDirection = Location;
 	TargetLocation = Location;
 	Pathfinder = APathfinder;
@@ -146,26 +146,37 @@ void NPC::FindValidLocation(RayCast& Ray, vec2 SearchDirection, float StartRange
 			if (Pathfinder->DetectCollision(MoveAwayDirection))
 			{
 				// If we are still selecting an invalid location, NPC is selecting a location off of the world
-				// So select the first valid location to the left/right/up/down direction 
+				// So select the first valid location to the left/right/up/down direction. A direction that is valid must
+				// also be a direction that takes teh NPC away from the player
 				vec2 MoveTop(0.f, -1.0f);
 				vec2 MoveRight(1.f, 0.0f);
 				vec2 MoveBottom(0.f, 1.0f);
-				vec2 MoveLeft(1.f, 0.0f);
+				vec2 MoveLeft(-1.f, 0.0f);
+
+				vec2 PlayerLocation = APlayer->GetLocation();
 
 				MoveAwayDirection = Ray.Cast(MoveTop, StartRange);
-				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+				float L1 = length(MoveAwayDirection - PlayerLocation);
+				float L2 = length(Location - PlayerLocation);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
 				MoveAwayDirection = Ray.Cast(MoveRight, StartRange);
-				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+				L1 = length(MoveAwayDirection - PlayerLocation);
+				L2 = length(Location - PlayerLocation);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
 				MoveAwayDirection = Ray.Cast(MoveBottom, StartRange);
-				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+				L1 = length(MoveAwayDirection - PlayerLocation);
+				L2 = length(Location - PlayerLocation);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
 				MoveAwayDirection = Ray.Cast(MoveLeft, StartRange);
-				if (!Pathfinder->DetectCollision(MoveAwayDirection))
+				L1 = length(MoveAwayDirection - PlayerLocation);
+				L2 = length(Location - PlayerLocation);
+				if (!Pathfinder->DetectCollision(MoveAwayDirection) && L1 > L2)
 					break;
 
 			}

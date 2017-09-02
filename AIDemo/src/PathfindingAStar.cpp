@@ -48,6 +48,7 @@ bool AStar::DetectCollision(Vec2 Coordinates)
 
 std::vector<Vec2> AStar::FindPath(Vec2 Start, Vec2 Target)
 {
+	// Round into a location that the pathfinder can use
 	Start.X = (int)Start.X;
 	Start.Y = (int)Start.Y;
 	Target.X = (int)Target.X;
@@ -105,7 +106,7 @@ std::vector<Vec2> AStar::FindPath(Vec2 Start, Vec2 Target)
 			{
 				Succesor = new AStarNode(NewCoord, Current);
 				Succesor->G = TotalNodeCost;
-				Succesor->H = fabs(Succesor->Coordinate.X + Target.X) + fabs(Succesor->Coordinate.Y + Target.Y);
+				Succesor->H = (int)(fabs(Succesor->Coordinate.X + Target.X) + fabs(Succesor->Coordinate.Y + Target.Y));
 				OpenSet.push_back(Succesor);
 			}
 			else if (Succesor && TotalNodeCost < Succesor->G)

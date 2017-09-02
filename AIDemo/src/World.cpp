@@ -10,31 +10,32 @@ World::World(int WorldMaxPosX, int WorldMaxPosY)
 	WorldMax = Vec2((float)(WorldMaxPosX * 25), (float)(WorldMaxPosY * 25));
 	WorldWidth = WorldMaxPosX * 25;
 	WorldHeight = WorldMaxPosY * 25;
-	m_texture = new Texture("images/floor.bmp");
-
-	// set seed
-	srand((unsigned int)(time(0)));
+	WorldTexture = new Texture("images/floor.bmp");
 }
 
 World::~World()
 {
-	delete m_texture;
+	delete WorldTexture;
 	Pathfinder = nullptr;
 }
 
-void World::draw(SDL_Renderer* r)
+void World::Draw(SDL_Renderer* Renderer, bool UseBackgroundTexture)
 {
-	SDL_Rect destRect;
-	destRect.w = 1 + 25;
-	destRect.h = 1 + 25;
+	SDL_Rect DestRect;
+	DestRect.w = 20;
+	DestRect.h = 20;
 
-	for (int x = 0; x < WorldWidth; ++x)
+	// Draw the world texture or just leave it blank (i.e. the colour the screen is cleared to)
+	if (UseBackgroundTexture)
 	{
-		for (int y = 0; y < WorldHeight; ++y)
+		for (int x = 0; x < WorldWidth; ++x)
 		{
-			destRect.x = x * 25;
-			destRect.y = y * 25;
-			SDL_RenderCopy(r, m_texture->GetTexture(), NULL, &destRect);
+			for (int y = 0; y < WorldHeight; ++y)
+			{
+				DestRect.x = x * 20;
+				DestRect.y = y * 20;
+				SDL_RenderCopy(Renderer, WorldTexture->GetTexture(), NULL, &DestRect);
+			}
 		}
 	}
 }

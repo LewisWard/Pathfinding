@@ -21,6 +21,7 @@ public:
 
 	inline const std::vector<Vec2>& GetPath() { return Path; }
 
+	/// \breif Toggles flag to compute a new path
 	inline void RecomputePath() { NewPath = true; }
 
 private:

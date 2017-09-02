@@ -21,7 +21,6 @@ public:
 
 	/// \brief update the NPC
 	/// \prama float delta time
-	/// \prama Vec2 new position to move to
 	void Update(float dt) override;
 
 	/// \brief load a new texture
@@ -52,8 +51,15 @@ private:
 	bool Moving; ///< is the NPC moving
 	bool SeePlayer = false;
 
+	/// \brief  Returns if the player is in line of sight of the NPC
+	/// \return bool, true if in LoS
 	bool ProcessLineOfSight();
 	
+	/// \brief Sets MoveAwayDirection to a valid location, searches for a valid location within range
+	/// \prama Ray
+	/// \prama vec3 search direction
+	/// \prama float start range
+	/// \prama float the maximum range
 	void FindValidLocation(Ray& ARay, Vec2 SearchDirection, float StartRange, float EndRange);
 
 };

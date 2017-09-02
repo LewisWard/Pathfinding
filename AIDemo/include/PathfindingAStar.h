@@ -37,24 +37,45 @@ public:
 	
 	AStar();
 
-	inline void SetWorldSize(float X, float Y) { WorldSize.X = X; WorldSize.Y = Y; }
-	inline Vec2 GetWorldSize() { return WorldSize; }
-	inline void ClearCollisions() { Walls.clear(); }
-	inline std::vector<Vec2> GetCollisions() { return Walls; }
-	inline void AddCollision(Vec2 Corrdinates) { Walls.push_back(Corrdinates); }
-
-	void RemoveCollision(Vec2 Coordinates);
-
-	AStarNode* FindNodeOnList(std::vector<AStarNode*>& Nodes, Vec2 Coordinates);
-
-	void ReleaseNodes(std::vector<AStarNode*>& Nodes);
-
 	bool DetectCollision(Vec2 Coordinates);
 
+	/// \breif Returns a path between two locations
+	/// \prama Vec2 
+	/// \prama Vec2 
+	/// \return std::vector<vec2> locations in the path
 	std::vector<Vec2> FindPath(Vec2 Start, Vec2 Target);
+
+	/// \breif Set the size of the pathfinding world
+	/// \prama float width
+	/// \prama float height
+	inline void SetWorldSize(float X, float Y) { WorldSize.X = X; WorldSize.Y = Y; }
+
+	inline Vec2 GetWorldSize() { return WorldSize; }
+
+	/// \breif Adds a collision locations (i.e. Walls)
+	inline void AddCollision(Vec2 Corrdinates) { Walls.push_back(Corrdinates); }
+
+	/// \breif Clears all collision locations (i.e. Walls)
+	inline void ClearCollisions() { Walls.clear(); }
+
+	/// \breif Clears a collision locations (i.e. Wall)
+	/// \prama Location
+	void RemoveCollision(Vec2 Coordinates);
+
+	inline std::vector<Vec2> GetCollisions() { return Walls; }
+	
+	/// \breif Clears a path of nodes
+	/// \prama std::vector<AStarNode*>
+	void ReleaseNodes(std::vector<AStarNode*>& Nodes);
 
 private:
 	std::vector<Vec2> Directions, Walls;
 	Vec2 WorldSize;
 	int DirectionsCount = 4;
+
+	/// \breif Checks if a collision location is already on a node list
+	/// \prama std::vector<AStarNode*> list to check
+	/// \prama Vec2 collision location
+	/// \return AStarNode* the found node, if none are found returns nullptr
+	AStarNode* FindNodeOnList(std::vector<AStarNode*>& Nodes, Vec2 Coordinates);
 };

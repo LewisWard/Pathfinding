@@ -10,36 +10,30 @@
 class Ray
 {
 public:
-	/// \brief Constr
 	Ray();
-
-	/// \brief Constr
-	/// \prama Vec2 origin of the ray
 	Ray(Vec2 Origin);
-
 	Ray(Vec2 Origin, Vec2 Direction) : Origin(Origin), Direction(Direction) {}
 
-	/// \brief Destr
 	~Ray();
 
 	/// \brief casts a ray from the origin in a direction
 	/// \prama Vec2 direction of the ray
-	/// \prama Vec2 length of the ray
+	/// \prama float length of the ray
 	/// \return Vec2 the ray
 	Vec2 Cast(Vec2 direction, float length);
 
-	/// \brief computes the position the ray intersected
+	/// \brief returns if a Wall have intersected with the ray
 	/// \prama Wall
 	/// \return bool, true if no objects are intersected between the origin and target
 	bool Intersect(Wall AWall);
 
 	/// \brief sets the origin
 	/// \prama Vec2 origin
-	inline void GetOrigin(Vec2 o) { Origin = o; }
+	inline void SetOrigin(Vec2 o) { Origin = o; }
 
 	/// \brief gets the origin
 	/// \return Vec2 origin
-	inline Vec2 SetOrigin() { return Origin; }
+	inline Vec2 GetOrigin() { return Origin; }
 
 	/// \brief sets the direction
 	/// \prama Vec2 direction

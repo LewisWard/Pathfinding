@@ -3,15 +3,12 @@
 #pragma once
 #include "AABB.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-/// \brief  Wall class
-//----------------------------------------------------------------------------------------------------------------------
 class Wall
 {
 public:
+
 	Wall(Vec2 GridCenter, float GridExtents);
 
-	/// \brief Destr
 	~Wall();
 
 	/// \brief tests to see if a collision took place
@@ -19,10 +16,12 @@ public:
 	/// \return bool 
 	bool Collision(Vec2 Position);
 
-	/// \brief get the index of the grid the wall is in
-	/// \return AABB grid index 
+	/// \brief get the AABB
+	/// \return AABB
 	inline AABB GetGrid() { return WallBounds;}
 
+	/// \brief get the location at the center of the AABB
+	/// \return AABB center
 	inline Vec2 GetCenter() { return Center; }
 
 private:

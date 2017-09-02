@@ -4,15 +4,6 @@
 #include "PathfindingAStar.h"
 #include <time.h>
 
-struct Grid
-{
-	AABB gridBounds;
-	int gridIndex;
-	bool walkable;
-	bool visited;
-	float cost;
-};
-
 class World
 {
 public:
@@ -25,23 +16,25 @@ public:
 
 	/// \brief draw the world
 	/// \prama SDL_Renderer* renderer
-	void draw(SDL_Renderer* r);
+	void Draw(SDL_Renderer* Renderer, bool UseBackgroundTexture);
+
+	/// \breif Loads a map from a text file
+	/// \prama char* Filename
+	void LoadMap(const char* Filename);
 
 	/// \brief create the texture
 	/// \prama SDL_Renderer* renderer
-	inline void CreateTexture(SDL_Renderer* r) { m_texture->CreateTexture(r); }
+	inline void CreateTexture(SDL_Renderer* r) { WorldTexture->CreateTexture(r); }
 
 	inline Vec2 GetWorldMax() { return WorldMax; }
 
-	void LoadMap(const char* Filename);
-
-	inline void  SetPathfinder(AStar* APathfinder) { Pathfinder = APathfinder; }
+	inline void SetPathfinder(AStar* APathfinder) { Pathfinder = APathfinder; }
 
 private:
+	Texture* WorldTexture = nullptr;
+	AStar* Pathfinder = nullptr;
 	Vec2 WorldMin;
 	Vec2 WorldMax;
 	int WorldWidth;
 	int WorldHeight;
-	Texture* m_texture = nullptr;
-	AStar* Pathfinder = nullptr;
 };

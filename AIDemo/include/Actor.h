@@ -20,18 +20,17 @@ public:
 
 	virtual void Update(float dt);
 
+	/// \brief Move towards the next location in the path
+	/// \prama float Delta Time
+	/// \prama std::vector<vec2> Path
 	virtual void MoveTo(float& dt, std::vector<Vec2>& Path);
 
-	/// \brief create the texture
+	/// \brief Create the texture
 	/// \prama SDL_Renderer* renderer
 	inline void CreateTexture(SDL_Renderer* r) { ActorTexture->CreateTexture(r); }
 
-	/// \brief set current position
-	/// \prama Vec2 position
 	inline void SetLocation(Vec2 NewLocation) { Location = NewLocation; }
 
-	/// \brief get current position
-	/// \return Vec2 position
 	inline Vec2 GetLocation() { return Location; }
 
 	inline void SetPathTarget(Vec2 p) { TargetLocation = p; }

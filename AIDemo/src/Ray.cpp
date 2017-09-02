@@ -36,7 +36,7 @@ Vec2 Ray::Cast(Vec2 Direction, float Length)
 bool Ray::Intersect(Wall AWall)
 {
 	// Method is based upon the fast, branchless method here: https://tavianator.com/fast-branchless-raybounding-box-intersections/
-	float LineMin = -INFINITY, LineMax = INFINITY;
+	float LineMin = -INFINITY, LineMax = INFINITY; // INFINITY is meant to create an overflow in constant arithmetic by design
 
 	Vec2 Invert(1.f / Direction);
 

@@ -23,7 +23,14 @@ void Player::Update(float dt)
 	if (IsAtPathEnd() || NewPath)
 	{
 		SetAtPathEnd(false);
-		Path = Pathfinder->FindPath(GetLocation(), *MouseLocation / 20);
+		Path = Pathfinder->FindPath(Location, *MouseLocation / 20);
+
+		// If a new path, the player shouldn't return to the location they were moving from already
+		if (NewPath)
+		{
+			Path.pop_back();
+		}
+
 		NewPath = false;
 	}
 	

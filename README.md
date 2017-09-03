@@ -9,4 +9,5 @@ Debug and Release modes have the correct SDL lib's created in order to run. The 
 ### Who do I talk to? ###
 
 Project author: Lewis Ward
+
 Contact: http://www.lewis-ward.com/contact.html

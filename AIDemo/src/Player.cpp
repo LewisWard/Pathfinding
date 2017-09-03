@@ -5,7 +5,7 @@
 Player::Player()
 {
 	TargetLocation = Location;
-	ActorTexture = new Texture("images/player.bmp");
+	ActorTexture = new Texture(ASSET_DIR"player.bmp");
 	MovementSpeed = 10.0f;
 }
 

@@ -4,10 +4,10 @@
 
 NPC::NPC()
 {
-	ActorTexture = new Texture("images/bot.bmp");
+	ActorTexture = new Texture(ASSET_DIR"bot.bmp");
 
 	Moving = false;
-	MovementSpeed = 9.5f;
+	MovementSpeed = 3.5f;
 	MoveAwayDirection = Location;
 }
 
@@ -15,8 +15,8 @@ NPC::NPC(Vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
 {
 	Moving = false;
 	Location = StartPosition;
-	ActorTexture = new Texture("images/bot.bmp");
-	MovementSpeed = 9.5f;
+	ActorTexture = new Texture(ASSET_DIR"bot.bmp");
+	MovementSpeed = 3.5f;
 	MoveAwayDirection = Location;
 	TargetLocation = Location;
 	Pathfinder = APathfinder;

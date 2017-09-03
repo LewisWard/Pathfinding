@@ -10,7 +10,7 @@ World::World(int WorldMaxPosX, int WorldMaxPosY)
 	WorldMax = Vec2((float)(WorldMaxPosX * 25), (float)(WorldMaxPosY * 25));
 	WorldWidth = WorldMaxPosX * 25;
 	WorldHeight = WorldMaxPosY * 25;
-	WorldTexture = new Texture("images/floor.bmp");
+	WorldTexture = new Texture(ASSET_DIR"floor.bmp");
 }
 
 World::~World()

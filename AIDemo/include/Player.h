@@ -11,7 +11,7 @@ public:
 
 	Player(Vec2 SpawnLocation, AStar* APathfinder, Vec2* Mouse) : Actor(SpawnLocation), Pathfinder(APathfinder), MouseLocation(Mouse)
 	{
-		ActorTexture = new Texture("images/player.bmp");
+		ActorTexture = new Texture(ASSET_DIR"player.bmp");
 	}
 
 	/// \brief Destr

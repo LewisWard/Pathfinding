@@ -14,9 +14,9 @@ Demo::Demo()
 	BotOne = new NPC(Vec2(8, 5), Pathfinder, ThePlayer);
 	BotTwo = new NPC(Vec2(5, 19), Pathfinder, ThePlayer);
 
-	BotTwo->LoadNewTexture("images/botB.bmp");
-	FloorTexture = new Texture("images/point.bmp");
-	WallTexture = new Texture("images/wall.bmp");
+	BotTwo->LoadNewTexture(ASSET_DIR"botB.bmp");
+	FloorTexture = new Texture(ASSET_DIR"point.bmp");
+	WallTexture = new Texture(ASSET_DIR"wall.bmp");
 
 	Pathfinder->SetWorldSize(30, 30);
 	BotOne->CreateTexture(Renderer);
@@ -25,7 +25,7 @@ Demo::Demo()
 	WallTexture->CreateTexture(Renderer);
 	TheWorld->CreateTexture(Renderer);
 	TheWorld->SetPathfinder(Pathfinder);
-	TheWorld->LoadMap("Map.txt");
+	TheWorld->LoadMap(ASSET_DIR"Map.txt");
 
 	Mouse = ThePlayer->GetLocation() * 20;
 	ThePlayer->CreateTexture(Renderer);

@@ -6,6 +6,7 @@
 #include "SDL\SDL.h"
 #include "SDL\SDL_opengl.h"
 #include "Vec2.h"
+#include "Config.h"
 
 /// \brief setup delta time
 void initTimerDT();

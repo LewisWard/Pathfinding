@@ -1,0 +1,4 @@
+// the configured options
+#define APPLICATION_VERSION_MAJOR @AIDemo_VERSION_MAJOR@
+#define APPLICATION_VERSION_MINOR @AIDemo_VERSION_MINOR@
+#define ASSET_DIR "@AIDemo_ASSET_DIR@"

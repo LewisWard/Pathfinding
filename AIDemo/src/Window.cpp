@@ -120,4 +120,6 @@ int Events::MouseQueue()
 			break;
 			default: return -1; break; // no event
 		}
+
+		return -1;
 }

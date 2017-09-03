@@ -15,13 +15,13 @@ Demo::Demo()
 	BotTwo = new NPC(Vec2(5, 19), Pathfinder, ThePlayer);
 
 	BotTwo->LoadNewTexture(ASSET_DIR"botB.bmp");
-	FloorTexture = new Texture(ASSET_DIR"point.bmp");
+	PathTexture = new Texture(ASSET_DIR"point.bmp");
 	WallTexture = new Texture(ASSET_DIR"wall.bmp");
 
 	Pathfinder->SetWorldSize(30, 30);
 	BotOne->CreateTexture(Renderer);
 	BotTwo->CreateTexture(Renderer);
-	FloorTexture->CreateTexture(Renderer);
+	PathTexture->CreateTexture(Renderer);
 	WallTexture->CreateTexture(Renderer);
 	TheWorld->CreateTexture(Renderer);
 	TheWorld->SetPathfinder(Pathfinder);
@@ -34,7 +34,7 @@ Demo::Demo()
 Demo::~Demo()
 {
 	delete WallTexture;
-	delete FloorTexture;
+	delete PathTexture;
 	delete BotTwo;
 	delete BotOne;
 	delete IOEvents;
@@ -52,7 +52,7 @@ void Demo::Update(float dt)
 	switch (IOEvents->EventQueue())
 	{
 		case 100: GameLoop = false; break;
-		case 4: DrawPaths = (DrawPaths == true) ? false : true; break;
+		case 4: DebugDraw = !DebugDraw; break;
 	}
 
 	// If the user has left clicked with the left mouse button on a grid, recompute path
@@ -75,7 +75,7 @@ void Demo::Draw()
 	TheWorld->Draw(Renderer, true);
 
 	// --------------------------- Debug Drawing --------------------------- //
-	if (DrawPaths)
+	if (DebugDraw)
 	{
 		SDL_Rect DestRect;
 		DestRect.w = 20;
@@ -85,21 +85,21 @@ void Demo::Draw()
 		{
 			DestRect.x = (int)(ThePlayer->GetPath()[i].X * 20.f);
 			DestRect.y = (int)(ThePlayer->GetPath()[i].Y * 20.f);
-			SDL_RenderCopy(Renderer, FloorTexture->GetTexture(), NULL, &DestRect);
+			SDL_RenderCopy(Renderer, PathTexture->GetTexture(), NULL, &DestRect);
 		}
 
 		for (size_t i = 0; i < BotOne->GetPath().size(); ++i)
 		{
 			DestRect.x = (int)(BotOne->GetPath()[i].X * 20.f);
 			DestRect.y = (int)(BotOne->GetPath()[i].Y * 20.f);
-			SDL_RenderCopy(Renderer, FloorTexture->GetTexture(), NULL, &DestRect);
+			SDL_RenderCopy(Renderer, PathTexture->GetTexture(), NULL, &DestRect);
 		}
 
 		for (size_t i = 0; i < BotTwo->GetPath().size(); ++i)
 		{
 			DestRect.x = (int)(BotTwo->GetPath()[i].X * 20.f);
 			DestRect.y = (int)(BotTwo->GetPath()[i].Y * 20.f);
-			SDL_RenderCopy(Renderer, FloorTexture->GetTexture(), NULL, &DestRect);
+			SDL_RenderCopy(Renderer, PathTexture->GetTexture(), NULL, &DestRect);
 		}
 	}
 	// --------------------------------------------------------------------- //
@@ -122,21 +122,24 @@ void Demo::Draw()
 	BotTwo->Draw(Renderer);
 
 	// --------------------------- Debug Drawing --------------------------- //
-	SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 0);
-	SDL_RenderDrawLine(Renderer, (int)((BotOne->GetLocation().X * 20) + 10), (int)((BotOne->GetLocation().Y * 20) + 10),
-		(int)((ThePlayer->GetLocation().X * 20) + 10), (int)((ThePlayer->GetLocation().Y * 20) + 10));
-	SDL_RenderDrawLine(Renderer, (int)((BotTwo->GetLocation().X * 20) + 10), (int)((BotTwo->GetLocation().Y * 20) + 10),
-		(int)((ThePlayer->GetLocation().X * 20) + 10), (int)((ThePlayer->GetLocation().Y * 20) + 10));
-
-	SDL_RenderDrawLine(Renderer, (int)((BotOne->GetLocation().X * 20) + 10), (int)((BotOne->GetLocation().Y * 20) + 10),
-		(int)((BotOne->GetMoveAwayDirection().X * 20) + 10), (int)((BotOne->GetMoveAwayDirection().Y * 20) + 10));
-	SDL_RenderDrawLine(Renderer, (int)((BotTwo->GetLocation().X * 20) + 10), (int)((BotTwo->GetLocation().Y * 20) + 10),
-		(int)((BotTwo->GetMoveAwayDirection().X * 20) + 10), (int)((BotTwo->GetMoveAwayDirection().Y * 20) + 10));
-
-	for (int x = 0; x < 30 * 20; x += 20)
+	if (DebugDraw)
 	{
-		SDL_RenderDrawLine(Renderer, 0, x, 600, x);
-		SDL_RenderDrawLine(Renderer, x, 0, x, 600);
+		SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 0);
+		SDL_RenderDrawLine(Renderer, (int)((BotOne->GetLocation().X * 20) + 10), (int)((BotOne->GetLocation().Y * 20) + 10),
+			(int)((ThePlayer->GetLocation().X * 20) + 10), (int)((ThePlayer->GetLocation().Y * 20) + 10));
+		SDL_RenderDrawLine(Renderer, (int)((BotTwo->GetLocation().X * 20) + 10), (int)((BotTwo->GetLocation().Y * 20) + 10),
+			(int)((ThePlayer->GetLocation().X * 20) + 10), (int)((ThePlayer->GetLocation().Y * 20) + 10));
+
+		SDL_RenderDrawLine(Renderer, (int)((BotOne->GetLocation().X * 20) + 10), (int)((BotOne->GetLocation().Y * 20) + 10),
+			(int)((BotOne->GetMoveAwayDirection().X * 20) + 10), (int)((BotOne->GetMoveAwayDirection().Y * 20) + 10));
+		SDL_RenderDrawLine(Renderer, (int)((BotTwo->GetLocation().X * 20) + 10), (int)((BotTwo->GetLocation().Y * 20) + 10),
+			(int)((BotTwo->GetMoveAwayDirection().X * 20) + 10), (int)((BotTwo->GetMoveAwayDirection().Y * 20) + 10));
+
+		for (int x = 0; x < 30 * 20; x += 20)
+		{
+			SDL_RenderDrawLine(Renderer, 0, x, 600, x);
+			SDL_RenderDrawLine(Renderer, x, 0, x, 600);
+		}
 	}
 	// --------------------------------------------------------------------- //
 

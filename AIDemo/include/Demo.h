@@ -23,7 +23,7 @@ public:
 
 private:
 	Window* DemoWindow = nullptr;
-	Texture* FloorTexture = nullptr;
+	Texture* PathTexture = nullptr;
 	Texture* WallTexture = nullptr;
 	NPC* BotOne = nullptr;
 	NPC* BotTwo = nullptr;
@@ -34,5 +34,5 @@ private:
 	Events* IOEvents;
 	Vec2 Mouse;
 	bool GameLoop = true;
-	bool DrawPaths = true;
+	bool DebugDraw = false;
 };

@@ -6,6 +6,12 @@ The project can be created using CMake, from within the 'AIDemo' directory. The 
 
 Debug and Release modes have the correct SDL lib's created in order to run. The .exe that are built can be found within the Bin directory.
 
+### Controls ###
+
+* Left mouse button: Move to location
+* D Key: Enable/Disable debug draw
+* Esc Key: Quit
+
 ### Who do I talk to? ###
 
 Project author: Lewis Ward

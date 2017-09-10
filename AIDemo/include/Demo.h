@@ -24,6 +24,7 @@ public:
 private:
 	Window* DemoWindow = nullptr;
 	Texture* PathTexture = nullptr;
+	Texture* BotPathTexture = nullptr;
 	Texture* WallTexture = nullptr;
 	NPC* BotOne = nullptr;
 	NPC* BotTwo = nullptr;

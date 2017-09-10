@@ -16,12 +16,14 @@ Demo::Demo()
 
 	BotTwo->LoadNewTexture(ASSET_DIR"botB.bmp");
 	PathTexture = new Texture(ASSET_DIR"point.bmp");
+	BotPathTexture = new Texture(ASSET_DIR"pointBot.bmp");
 	WallTexture = new Texture(ASSET_DIR"wall.bmp");
 
 	Pathfinder->SetWorldSize(30, 30);
 	BotOne->CreateTexture(Renderer);
 	BotTwo->CreateTexture(Renderer);
 	PathTexture->CreateTexture(Renderer);
+	BotPathTexture->CreateTexture(Renderer);
 	WallTexture->CreateTexture(Renderer);
 	TheWorld->CreateTexture(Renderer);
 	TheWorld->SetPathfinder(Pathfinder);
@@ -34,6 +36,7 @@ Demo::Demo()
 Demo::~Demo()
 {
 	delete WallTexture;
+	delete BotPathTexture;
 	delete PathTexture;
 	delete BotTwo;
 	delete BotOne;
@@ -92,14 +95,14 @@ void Demo::Draw()
 		{
 			DestRect.x = (int)(BotOne->GetPath()[i].X * 20.f);
 			DestRect.y = (int)(BotOne->GetPath()[i].Y * 20.f);
-			SDL_RenderCopy(Renderer, PathTexture->GetTexture(), NULL, &DestRect);
+			SDL_RenderCopy(Renderer, BotPathTexture->GetTexture(), NULL, &DestRect);
 		}
 
 		for (size_t i = 0; i < BotTwo->GetPath().size(); ++i)
 		{
 			DestRect.x = (int)(BotTwo->GetPath()[i].X * 20.f);
 			DestRect.y = (int)(BotTwo->GetPath()[i].Y * 20.f);
-			SDL_RenderCopy(Renderer, PathTexture->GetTexture(), NULL, &DestRect);
+			SDL_RenderCopy(Renderer, BotPathTexture->GetTexture(), NULL, &DestRect);
 		}
 	}
 	// --------------------------------------------------------------------- //

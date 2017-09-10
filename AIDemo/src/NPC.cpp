@@ -8,6 +8,7 @@ NPC::NPC()
 
 	Moving = false;
 	MovementSpeed = 3.5f;
+	TimeToGeneratePath = 2.5f;
 	MoveAwayDirection = Location;
 }
 
@@ -17,6 +18,7 @@ NPC::NPC(Vec2 StartPosition, AStar* APathfinder, Player* ThePlayer)
 	Location = StartPosition;
 	ActorTexture = new Texture(ASSET_DIR"bot.bmp");
 	MovementSpeed = 3.5f;
+	TimeToGeneratePath = 2.5f;
 	MoveAwayDirection = Location;
 	TargetLocation = Location;
 	Pathfinder = APathfinder;
@@ -46,28 +48,19 @@ void NPC::Update(float dt)
 	// If the Bot is in LoS of the Player and is not moving, create a path to move away
 	if (SeePlayer && !Moving)
 	{
-		Vec2 ValidLocation;
-
-		// Turn into a useable position for the pathfinder, handles rounding 
-		if (APlayer->GetLocation().X < Location.X)
-			ValidLocation.X = (int)MoveAwayDirection.X + 1;
-		else
-			ValidLocation.X = (int)MoveAwayDirection.X;
-
-		if (APlayer->GetLocation().Y < Location.Y)
-			ValidLocation.Y = (int)MoveAwayDirection.Y + 1;
-		else
-			ValidLocation.Y = (int)MoveAwayDirection.Y;
-	
-
-		// Make sure the location stays within the world bounds
-		if (ValidLocation.X > Pathfinder->GetWorldSize().X - 1)
-			ValidLocation.X = Pathfinder->GetWorldSize().X - 1;
-		if (ValidLocation.Y > Pathfinder->GetWorldSize().Y - 1)
-			ValidLocation.Y = Pathfinder->GetWorldSize().Y - 1;
-
-		Path = Pathfinder->FindPath(Location, ValidLocation);
-		Path.pop_back(); // This will be the current position the AI is in
+		GeneratePath();
+	}
+	else if (SeePlayer && MovingRandomPath)
+	{
+		// Stop moving if using a random path, on the next update will generate a new path
+		MovingRandomPath = false;
+		Path.clear();
+	}
+	else if (TimeNotMoving >= TimeToGeneratePath)
+	{
+		GenerateRandomPath();
+		TimeNotMoving = 0.0f;
+		MovingRandomPath = true;
 	}
 
 	// Move away from the player
@@ -79,6 +72,7 @@ void NPC::Update(float dt)
 	else
 	{
 		Moving = false;
+		TimeNotMoving += dt;
 	}
 }
 
@@ -119,10 +113,9 @@ bool NPC::ProcessLineOfSight()
 		}
 	}
 
-	float Range = 2.0f;
+	float Range = 3.0f;
 	MoveAwayDirection = ARay.Cast(DirectionToPlayer, Range);
 	FindValidLocation(ARay, DirectionToPlayer, Range, 5.0f);
-
 	
 	// Is within line of sight and needs a new path to move away
 	SeePlayer = !HitTarget;
@@ -132,6 +125,8 @@ bool NPC::ProcessLineOfSight()
 void NPC::FindValidLocation(Ray& ARay, Vec2 SearchDirection, float StartRange, float EndRange)
 {
 	float Start = StartRange;
+	MoveAwayDirection.X = (int)MoveAwayDirection.X;
+	MoveAwayDirection.Y = (int)MoveAwayDirection.Y;
 
 	// Check that the selected MoveAwayDirection location is valid to move to, otherwise, try to find another valid location to move to
 	if (Pathfinder->DetectCollision(MoveAwayDirection))
@@ -188,3 +183,26 @@ void NPC::FindValidLocation(Ray& ARay, Vec2 SearchDirection, float StartRange, f
 		}
 	}
 }
+
+void NPC::GeneratePath()
+{
+	Vec2 ValidLocation((int)MoveAwayDirection.X, (int)MoveAwayDirection.Y);
+
+	// Make sure the location stays within the world bounds
+	if (ValidLocation.X > Pathfinder->GetWorldSize().X - 1)
+		ValidLocation.X = Pathfinder->GetWorldSize().X - 1;
+	if (ValidLocation.Y > Pathfinder->GetWorldSize().Y - 1)
+		ValidLocation.Y = Pathfinder->GetWorldSize().Y - 1;
+
+	Path = Pathfinder->FindPath(Location, ValidLocation);
+	Path.pop_back(); // This will be the current position the AI is in
+}
+
+void NPC::GenerateRandomPath()
+{
+	Vec2 ValidLocation = Pathfinder->RandomValidPosition();
+
+	Path = Pathfinder->FindPath(Location, ValidLocation);
+	Path.pop_back(); // This will be the current position the AI is in
+}
+

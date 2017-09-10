@@ -48,12 +48,12 @@ public:
 	/// \breif Set the size of the pathfinding world
 	/// \prama float width
 	/// \prama float height
-	inline void SetWorldSize(float X, float Y) { WorldSize.X = X; WorldSize.Y = Y; }
+	void SetWorldSize(float X, float Y);
 
 	inline Vec2 GetWorldSize() { return WorldSize; }
 
 	/// \breif Adds a collision locations (i.e. Walls)
-	inline void AddCollision(Vec2 Corrdinates) { Walls.push_back(Corrdinates); }
+	void AddCollision(Vec2 Corrdinates);
 
 	/// \breif Clears all collision locations (i.e. Walls)
 	inline void ClearCollisions() { Walls.clear(); }
@@ -68,8 +68,12 @@ public:
 	/// \prama std::vector<AStarNode*>
 	void ReleaseNodes(std::vector<AStarNode*>& Nodes);
 
+	/// \breif Returns a random valid location to move to
+	/// \prama Vec2 valid location
+	Vec2 RandomValidPosition();
+
 private:
-	std::vector<Vec2> Directions, Walls;
+	std::vector<Vec2> Directions, Walls, ValidLocations;
 	Vec2 WorldSize;
 	int DirectionsCount = 4;
 

@@ -1,11 +1,15 @@
 // Author : Lewis Ward
 // Date: 29/08/2017
 #include "PathfindingAStar.h"
+#include <stdlib.h>
+#include <time.h> 
 
 AStar::AStar()
 {
 	Directions.reserve(4);
 	Directions = { { 0, 1 },{ 1, 0 },{ 0, -1 },{ -1, 0 } };
+
+	srand(time(NULL));
 }
 
 void AStar::RemoveCollision(Vec2 Coordinates)
@@ -127,4 +131,41 @@ std::vector<Vec2> AStar::FindPath(Vec2 Start, Vec2 Target)
 	ReleaseNodes(OpenSet);
 	ReleaseNodes(CloseSet);
 	return Path;
+}
+
+void AStar::SetWorldSize(float X, float Y)
+{ 
+	WorldSize.X = X; 
+	WorldSize.Y = Y; 
+
+	// Clear the array and allocate memory for it
+	ValidLocations.clear();
+	ValidLocations.reserve(X * Y);
+
+	// Add valid locations to the array
+	for (size_t x = 0; x < X; x++)
+	{
+		for (size_t y = 0; y < Y; y++)
+		{
+			ValidLocations.push_back(Vec2(x, y));
+		}
+	}
+}
+
+void AStar::AddCollision(Vec2 Corrdinates) 
+{ 
+	Walls.push_back(Corrdinates); 
+
+	std::vector<Vec2>::iterator Found = std::find(ValidLocations.begin(), ValidLocations.end(), Corrdinates);
+
+	if (Found != ValidLocations.end())
+	{
+		ValidLocations.erase(Found);
+	}
+}
+
+Vec2 AStar::RandomValidPosition()
+{
+	int RandomIndex = rand() % ValidLocations.size();
+	return ValidLocations[RandomIndex];
 }

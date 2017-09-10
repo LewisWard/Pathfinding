@@ -48,8 +48,11 @@ private:
 	AStar* Pathfinder = nullptr;
 	Player* APlayer = nullptr;
 	Vec2 MoveAwayDirection;
-	bool Moving; ///< is the NPC moving
+	float TimeNotMoving = 0.0f;
+	float TimeToGeneratePath = 2.5f;
+	bool Moving = false;
 	bool SeePlayer = false;
+	bool MovingRandomPath = false;
 
 	/// \brief  Returns if the player is in line of sight of the NPC
 	/// \return bool, true if in LoS
@@ -62,4 +65,9 @@ private:
 	/// \prama float the maximum range
 	void FindValidLocation(Ray& ARay, Vec2 SearchDirection, float StartRange, float EndRange);
 
+	/// \breif Generates a new path 
+	void GeneratePath();
+
+	/// \breif Generates a new path to any random valid location
+	void GenerateRandomPath();
 };
